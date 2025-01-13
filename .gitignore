@@ -1,0 +1,18 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+/run
+
+/cuneiform-server/build.gradle.kts
+/cuneiform-server/src/minecraft
+/paper-server
+/folia-server
+/cuneiform-api/build.gradle.kts
+/paper-api
+/paper-api-generator
+/folia-api/
+
+.idea/
