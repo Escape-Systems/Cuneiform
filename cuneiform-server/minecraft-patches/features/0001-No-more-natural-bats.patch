@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Mon, 13 Jan 2025 09:09:48 -0600
+Subject: [PATCH] No more natural bats Replaces MouseBytes Plugin
+
+
+diff --git a/net/minecraft/world/entity/ambient/Bat.java b/net/minecraft/world/entity/ambient/Bat.java
+index 5ebe7b1dce367d5c5e1136b97b2b9f6737595201..37f150b917b137149f5ccdd101399ad06b73bf26 100644
+--- a/net/minecraft/world/entity/ambient/Bat.java
++++ b/net/minecraft/world/entity/ambient/Bat.java
+@@ -226,21 +226,25 @@ public class Bat extends AmbientCreature {
+     public static boolean checkBatSpawnRules(
+         EntityType<Bat> entityType, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource randomSource
+     ) {
+-        if (pos.getY() >= level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY()) {
+-            return false;
+-        } else {
+-            int maxLocalRawBrightness = level.getMaxLocalRawBrightness(pos);
+-            int i = 4;
+-            if (isHalloween()) {
+-                i = 7;
+-            } else if (randomSource.nextBoolean()) {
+-                return false;
+-            }
+-
+-            return maxLocalRawBrightness <= randomSource.nextInt(i)
+-                && level.getBlockState(pos.below()).is(BlockTags.BATS_SPAWNABLE_ON)
+-                && checkMobSpawnRules(entityType, level, spawnReason, pos, randomSource);
+-        }
++      // Cuneiform START - No more natural bats
++        return false;
++        
++//        if (pos.getY() >= level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY()) {
++//            return false;
++//        } else {
++//            int maxLocalRawBrightness = level.getMaxLocalRawBrightness(pos);
++//            int i = 4;
++//            if (isHalloween()) {
++//                i = 7;
++//            } else if (randomSource.nextBoolean()) {
++//                return false;
++//            }
++//
++//            return maxLocalRawBrightness <= randomSource.nextInt(i)
++//                && level.getBlockState(pos.below()).is(BlockTags.BATS_SPAWNABLE_ON)
++//                && checkMobSpawnRules(entityType, level, spawnReason, pos, randomSource);
++//        }
++        // Cuneiform END
+     }
+ 
+     private static boolean isHalloween() {
