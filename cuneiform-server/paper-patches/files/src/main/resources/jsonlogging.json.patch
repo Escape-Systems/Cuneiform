@@ -1,0 +1,67 @@
+--- /dev/null
++++ b/src/main/resources/jsonlogging.json
+@@ -1,0 +_,64 @@
++{
++  "instant": {
++    "$resolver": "timestamp",
++    "pattern": {
++      "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
++      "timeZone": "UTC"
++    }
++  },
++  "level": {
++    "$resolver": "level",
++    "field": "name"
++  },
++  "logger": {
++    "$resolver": "logger",
++    "field": "name"
++  },
++  "thread": {
++    "name": {
++      "$resolver": "thread",
++      "field": "name"
++    },
++    "id": {
++      "$resolver": "thread",
++      "field": "id"
++    }
++  },
++  "message": {
++    "$resolver": "message"
++  },
++  "exception": {
++    "className": {
++      "$resolver": "exception",
++      "field": "className"
++    },
++    "message": {
++      "$resolver": "exception",
++      "field": "message"
++    },
++    "stackTrace": {
++      "$resolver": "exception",
++      "field": "stackTrace",
++      "stackTrace": {
++        "elementTemplate": {
++          "class": {
++            "$resolver": "stackTraceElement",
++            "field": "className"
++          },
++          "method": {
++            "$resolver": "stackTraceElement",
++            "field": "methodName"
++          },
++          "file": {
++            "$resolver": "stackTraceElement",
++            "field": "fileName"
++          },
++          "line": {
++            "$resolver": "stackTraceElement",
++            "field": "lineNumber"
++          }
++        }
++      }
++    }
++  }
++}

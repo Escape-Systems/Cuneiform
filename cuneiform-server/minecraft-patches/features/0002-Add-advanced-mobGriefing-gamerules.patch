@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <tech@escape.systems>
+Date: Tue, 14 Jan 2025 06:48:43 +0000
+Subject: [PATCH] Add advanced mobGriefing gamerules
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 0cc5607080f79f9e9b65606a3e16fd4961368b02..3805e2167996938ded1aa36dc208a78ab8c207f1 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1955,6 +1955,20 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             case TRIGGER -> Explosion.BlockInteraction.TRIGGER_BLOCK;
+             case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
+         };
++
++        // Cuneiform START - Add more gamerules for mobGriefing.
++        if (explosionInteraction == ExplosionInteraction.MOB) {
++            switch (source ) {
++                case WitherSkull ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case Creeper ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_CREEPER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case null -> {}
++                default -> {
++                    System.out.println("Explosion from entity: " + source);
++                }
++            }
++        }
++        // Cuneiform END
++
+         Vec3 vec3 = new Vec3(x, y, z);
+         ServerExplosion serverExplosion = new ServerExplosion(this, source, damageSource, damageCalculator, vec3, radius, fire, blockInteraction);
+         if (configurator != null) configurator.accept(serverExplosion);// Paper - Allow explosions to damage source
+diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+index afe43600c4976e01e61d716034a2823d50fb55cb..0c11b0a4f4dc47732872a3854b9557f1c20364d0 100644
+--- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
++++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -346,7 +346,7 @@ public class WitherBoss extends Monster implements RangedAttackMob {
+ 
+             if (this.destroyBlocksTick > 0) {
+                 this.destroyBlocksTick--;
+-                if (this.destroyBlocksTick == 0 && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
++                if (this.destroyBlocksTick == 0 && (level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && level.getGameRules().getBoolean(GameRules.RULE_WITHER_GRIEFING))) { // Cuneiform - Add more gamerules for mobGriefing.
+                     boolean flag = false;
+                     int alternativeTarget = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
+                     int floor = Mth.floor(this.getBbHeight());
+diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
+index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..77191b50dbac11b187795f3bd3e01e50546390f0 100644
+--- a/net/minecraft/world/level/GameRules.java
++++ b/net/minecraft/world/level/GameRules.java
+@@ -228,6 +228,16 @@ public class GameRules {
+     );
+     // Cuneiform END
+ 
++    // Cuneiform START - Add more gamerules for mobGriefing.
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_WITHER_GRIEFING = register(
++            "witherGriefing", GameRules.Category.SPAWNING, GameRules.BooleanValue.create(false)
++    );
++
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_CREEPER_GRIEFING = register(
++            "creeperGriefing", GameRules.Category.SPAWNING, GameRules.BooleanValue.create(false)
++    );
++    // Cueiform END
++
+     private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
+     private final FeatureFlagSet enabledFeatures;
+     private final GameRules.Value<?>[] gameruleArray; // Paper - Perf: Use array for gamerule storage
