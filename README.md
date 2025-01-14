@@ -5,7 +5,7 @@ needs and wants.
 ![Full of: Glimbleblorp](https://img.shields.io/badge/Full%20of-Glimbleblorp-brightgreen)
 ![Needs more: Mouse bites](https://img.shields.io/badge/Needs%20More-Mouse%20bites-lightgrey)
 ![Join Our Discord](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fguilds%2F1320605190453329940%2Fwidget.json&query=presence_count&suffix=%20Online&logo=discord&logoColor=5865F2&label=.gg%2Fesc-sys&color=5865F2&link=https%3A%2F%2Fdiscord.gg%2Fesc-sys)
-
+[![Patch and Build](https://github.com/Escape-Systems/Cuneiform/actions/workflows/build.yml/badge.svg)](https://github.com/Escape-Systems/Cuneiform/actions/workflows/build.yml)
 
 ## Notable Additions
 - More specific gamerules
