@@ -5,10 +5,20 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0cc5607080f79f9e9b65606a3e16fd4961368b02..3805e2167996938ded1aa36dc208a78ab8c207f1 100644
+index 0cc5607080f79f9e9b65606a3e16fd4961368b02..eed0dcb5dc8302acb49c18fb01f9d5c86b675655 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1955,6 +1955,20 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -101,7 +101,9 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+ import net.minecraft.world.entity.animal.horse.SkeletonHorse;
+ import net.minecraft.world.entity.boss.EnderDragonPart;
+ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
++import net.minecraft.world.entity.monster.Creeper;
+ import net.minecraft.world.entity.player.Player;
++import net.minecraft.world.entity.projectile.WitherSkull;
+ import net.minecraft.world.entity.raid.Raid;
+ import net.minecraft.world.entity.raid.Raids;
+ import net.minecraft.world.flag.FeatureFlagSet;
+@@ -1955,6 +1957,20 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              case TRIGGER -> Explosion.BlockInteraction.TRIGGER_BLOCK;
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
