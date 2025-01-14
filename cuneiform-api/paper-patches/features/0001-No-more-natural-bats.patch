@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Tue, 14 Jan 2025 03:06:58 -0600
+Subject: [PATCH] No more natural bats
+
+
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index 89f1820ae94c48f51a44df750904bb285013720c..f05bc95b9f61540b0126391439b0287c95041e85 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -296,6 +296,14 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+      */
+     public static final GameRule<Integer> SPAWN_CHUNK_RADIUS = new GameRule<>("spawnChunkRadius", Integer.class);
+ 
++
++    // Cuneiform START - No more natural bats.
++    /**
++     * Whether bats will naturally spawn.
++     */
++    public static final GameRule<Boolean> DO_BAT_SPAWN = new GameRule<>("doBatSpawn", Boolean.class);
++    // Cuneiform END
++
+     // All GameRules instantiated above this for organizational purposes
+     private final String name;
+     private final Class<T> type;
