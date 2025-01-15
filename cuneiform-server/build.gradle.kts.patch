@@ -1,20 +1,32 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -21,7 +_,8 @@
+@@ -1,5 +_,7 @@
+ import io.papermc.paperweight.attribute.DevBundleOutput
+-import io.papermc.paperweight.util.*
++import io.papermc.paperweight.util.Git
++import io.papermc.paperweight.util.path
++import io.papermc.paperweight.util.upstreamsDirectory
+ import java.time.Instant
+ 
+ plugins {
+@@ -20,8 +_,9 @@
+     minecraftVersion = providers.gradleProperty("mcVersion")
      // macheOldPath = file("F:\\Projects\\PaperTooling\\mache\\versions\\1.21.4\\src\\main\\java")
      // gitFilePatches = true
- 
+-    
 -    val fork = forks.register("folia") {
++
 +    val folia = forks.register("folia") {
 +        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -30,7 +_,22 @@
+@@ -30,8 +_,29 @@
          }
      }
  
 -    activeFork = fork
+-    
 +    val cuneiform = forks.register("cuneiform") {
 +        forks = folia
 +        upstream.patchRepo("paperServer") {
@@ -24,16 +36,55 @@
 +        }
 +        upstream.patchDir("foliaServer") {
 +            upstreamPath = "folia-server"
-+            excludes = setOf("src/minecraft", "paper-patches", "minecraft-patches", "build.gradle.kts", "build.gradle.kts.patch")
++            excludes = setOf(
++                "src/minecraft",
++                "paper-patches",
++                "minecraft-patches",
++                "build.gradle.kts",
++                "build.gradle.kts.patch"
++            )
 +            patchesDir = rootDirectory.dir("cuneiform-server/folia-patches")
 +            outputDir = rootDirectory.dir("folia-server")
 +        }
 +    }
 +
 +    activeFork = cuneiform
- 
++
      paper {
          paperServerDir = upstreamsDirectory().map { it.dir("paper/paper-server") }
+     }
+@@ -68,6 +_,7 @@
+     @get:Inject
+     abstract val archiveOperations: ArchiveOperations
+ }
++
+ val services = objects.newInstance<Services>()
+ 
+ if (project.providers.gradleProperty("publishDevBundle").isPresent) {
+@@ -81,7 +_,10 @@
+     devBundleComponent.addVariantsFromConfiguration(devBundle.get()) {}
+ 
+     val runtime = configurations.consumable("serverRuntimeClasspath") {
+-        attributes.attribute(DevBundleOutput.ATTRIBUTE, objects.named(DevBundleOutput.SERVER_DEPENDENCIES))
++        attributes.attribute(
++            DevBundleOutput.ATTRIBUTE,
++            objects.named(DevBundleOutput.SERVER_DEPENDENCIES)
++        )
+         attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+         extendsFrom(configurations.runtimeClasspath.get())
+     }
+@@ -90,7 +_,10 @@
+     }
+ 
+     val compile = configurations.consumable("serverCompileClasspath") {
+-        attributes.attribute(DevBundleOutput.ATTRIBUTE, objects.named(DevBundleOutput.SERVER_DEPENDENCIES))
++        attributes.attribute(
++            DevBundleOutput.ATTRIBUTE,
++            objects.named(DevBundleOutput.SERVER_DEPENDENCIES)
++        )
+         attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_API))
+         extendsFrom(configurations.compileClasspath.get())
+     }
 @@ -120,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java") }
@@ -49,6 +100,14 @@
      }
  }
  
+@@ -137,6 +_,7 @@
+ 
+ // Configure mockito agent that is needed in newer java versions
+ val mockitoAgent = configurations.register("mockitoAgent")
++
+ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+     @get:CompileClasspath
+     abstract val fileCollection: ConfigurableFileCollection
 @@ -147,7 +_,7 @@
  }
  
@@ -67,23 +126,52 @@
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.7.1")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT")
+@@ -186,7 +_,9 @@
+     testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
+     testImplementation("org.hamcrest:hamcrest:2.2")
+     testImplementation("org.mockito:mockito-core:5.14.1")
+-    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // Configure mockito agent that is needed in newer java versions
++    mockitoAgent("org.mockito:mockito-core:5.14.1") {
++        isTransitive = false
++    } // Configure mockito agent that is needed in newer java versions
+     testImplementation("org.ow2.asm:asm-tree:9.7.1")
+     testImplementation("org.junit-pioneer:junit-pioneer:2.2.0") // CartesianTest
+ 
 @@ -216,14 +_,14 @@
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
--            "Implementation-Title" to "Folia", // Folia
-+            "Implementation-Title" to "Cuneiform", // Cuneiform
+-            "Implementation-Title" to "Folia",
++            "Implementation-Title" to "Cuneiform",
              "Implementation-Version" to implementationVersion,
              "Implementation-Vendor" to date,
--            "Specification-Title" to "Folia", // Folia
-+            "Specification-Title" to "Cuneiform", // Cuneiform
+-            "Specification-Title" to "Folia",
++            "Specification-Title" to "Cuneiform",
              "Specification-Version" to project.version,
 -            "Specification-Vendor" to "Paper Team",
--            "Brand-Id" to "papermc:folia", // Folia
--            "Brand-Name" to "Folia", // Folia
-+            "Specification-Vendor" to "Escape Systems Team", // Cuneiform
-+            "Brand-Id" to "escape-systems:cuneiform", // Cuneiform
-+            "Brand-Name" to "Cuneiform", // Cuneiform
+-            "Brand-Id" to "papermc:folia",
+-            "Brand-Name" to "Folia",
++            "Specification-Vendor" to "Escape Systems Team",
++            "Brand-Id" to "escape-systems:cuneiform",
++            "Brand-Name" to "Cuneiform",
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
+@@ -240,11 +_,12 @@
+     options.compilerArgs.add("-parameters")
+ }
+ 
+-val scanJar = tasks.register("scanJarForBadCalls", io.papermc.paperweight.tasks.ScanJarForBadCalls::class) {
+-    badAnnotations.add("Lio/papermc/paper/annotation/DoNotUse;")
+-    jarToScan.set(tasks.jar.flatMap { it.archiveFile })
+-    classpath.from(configurations.compileClasspath)
+-}
++val scanJar =
++    tasks.register("scanJarForBadCalls", io.papermc.paperweight.tasks.ScanJarForBadCalls::class) {
++        badAnnotations.add("Lio/papermc/paper/annotation/DoNotUse;")
++        jarToScan.set(tasks.jar.flatMap { it.archiveFile })
++        classpath.from(configurations.compileClasspath)
++    }
+ tasks.check {
+     dependsOn(scanJar)
+ }
