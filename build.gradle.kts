@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    java // TODO java launcher tasks
+    java
     id("io.papermc.paperweight.patcher") version "2.0.0-beta.13"
 }
 
