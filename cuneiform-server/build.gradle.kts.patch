@@ -21,12 +21,11 @@
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -30,8 +_,29 @@
+@@ -30,7 +_,28 @@
          }
      }
  
 -    activeFork = fork
--    
 +    val cuneiform = forks.register("cuneiform") {
 +        forks = folia
 +        upstream.patchRepo("paperServer") {
@@ -49,48 +48,15 @@
 +    }
 +
 +    activeFork = cuneiform
-+
-     paper {
-         paperServerDir = upstreamsDirectory().map { it.dir("paper/paper-server") }
-     }
-@@ -68,6 +_,7 @@
-     @get:Inject
-     abstract val archiveOperations: ArchiveOperations
- }
-+
- val services = objects.newInstance<Services>()
  
- if (project.providers.gradleProperty("publishDevBundle").isPresent) {
-@@ -81,7 +_,10 @@
-     devBundleComponent.addVariantsFromConfiguration(devBundle.get()) {}
- 
-     val runtime = configurations.consumable("serverRuntimeClasspath") {
--        attributes.attribute(DevBundleOutput.ATTRIBUTE, objects.named(DevBundleOutput.SERVER_DEPENDENCIES))
-+        attributes.attribute(
-+            DevBundleOutput.ATTRIBUTE,
-+            objects.named(DevBundleOutput.SERVER_DEPENDENCIES)
-+        )
-         attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-         extendsFrom(configurations.runtimeClasspath.get())
-     }
-@@ -90,7 +_,10 @@
-     }
- 
-     val compile = configurations.consumable("serverCompileClasspath") {
--        attributes.attribute(DevBundleOutput.ATTRIBUTE, objects.named(DevBundleOutput.SERVER_DEPENDENCIES))
-+        attributes.attribute(
-+            DevBundleOutput.ATTRIBUTE,
-+            objects.named(DevBundleOutput.SERVER_DEPENDENCIES)
-+        )
-         attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_API))
-         extendsFrom(configurations.compileClasspath.get())
-     }
-@@ -120,10 +_,14 @@
+     spigot {
+         buildDataRef = "3edaf46ec1eed4115ce1b18d2846cded42577e42"
+@@ -116,10 +_,14 @@
      main {
          java { srcDir("../paper-server/src/main/java") }
          resources { srcDir("../paper-server/src/main/resources") }
-+        java { srcDir("../folia-server/src/main/java") }
-+        resources { srcDir("../folia-server/src/main/resources") }
++        java { srcDir("../folia-server/src/test/java") }
++        resources { srcDir("../folia-server/src/test/resources") }
      }
      test {
          java { srcDir("../paper-server/src/test/java") }
@@ -100,15 +66,7 @@
      }
  }
  
-@@ -137,6 +_,7 @@
- 
- // Configure mockito agent that is needed in newer java versions
- val mockitoAgent = configurations.register("mockitoAgent")
-+
- abstract class MockitoAgentProvider : CommandLineArgumentProvider {
-     @get:CompileClasspath
-     abstract val fileCollection: ConfigurableFileCollection
-@@ -147,7 +_,7 @@
+@@ -143,7 +_,7 @@
  }
  
  dependencies {
@@ -117,27 +75,15 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -169,6 +_,8 @@
+@@ -165,6 +_,7 @@
          isTransitive = false
      }
      implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Add support for proxy protocol
-+
 +    implementation("org.apache.logging.log4j:log4j-layout-template-json:2.24.1") // Cuneiform - JSON Logging
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.7.1")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT")
-@@ -186,7 +_,9 @@
-     testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
-     testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.14.1")
--    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // Configure mockito agent that is needed in newer java versions
-+    mockitoAgent("org.mockito:mockito-core:5.14.1") {
-+        isTransitive = false
-+    } // Configure mockito agent that is needed in newer java versions
-     testImplementation("org.ow2.asm:asm-tree:9.7.1")
-     testImplementation("org.junit-pioneer:junit-pioneer:2.2.0") // CartesianTest
- 
-@@ -216,14 +_,14 @@
+@@ -212,14 +_,14 @@
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -151,27 +97,9 @@
 -            "Specification-Vendor" to "Paper Team",
 -            "Brand-Id" to "papermc:folia",
 -            "Brand-Name" to "Folia",
-+            "Specification-Vendor" to "Escape Systems Team",
++            "Specification-Vendor" to "Escape Systems",
 +            "Brand-Id" to "escape-systems:cuneiform",
 +            "Brand-Name" to "Cuneiform",
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -240,11 +_,12 @@
-     options.compilerArgs.add("-parameters")
- }
- 
--val scanJar = tasks.register("scanJarForBadCalls", io.papermc.paperweight.tasks.ScanJarForBadCalls::class) {
--    badAnnotations.add("Lio/papermc/paper/annotation/DoNotUse;")
--    jarToScan.set(tasks.jar.flatMap { it.archiveFile })
--    classpath.from(configurations.compileClasspath)
--}
-+val scanJar =
-+    tasks.register("scanJarForBadCalls", io.papermc.paperweight.tasks.ScanJarForBadCalls::class) {
-+        badAnnotations.add("Lio/papermc/paper/annotation/DoNotUse;")
-+        jarToScan.set(tasks.jar.flatMap { it.archiveFile })
-+        classpath.from(configurations.compileClasspath)
-+    }
- tasks.check {
-     dependsOn(scanJar)
- }
