@@ -19,3 +19,6 @@ build
 
 # Macos Files
 .DS_Store
+
+# Jenkinsfile Libs
+/lib
