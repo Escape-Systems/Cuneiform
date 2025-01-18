@@ -1,0 +1,209 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Sat, 18 Jan 2025 17:01:16 -0600
+Subject: [PATCH] Re-enable the datapack command in a limited form.
+
+It's safe to list enabled and availible datapacks (good for debugging for us).
+Maybe I will eventually allow for enable functionality, but disabling is probs gonna be a no from me chief.
+
+diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
+index d9b339eaa28aedbc7e7a1d4eebfebbb5ff16afe1..64b70ac2cb0d4edab46d972ffaec72b3197accf1 100644
+--- a/net/minecraft/commands/Commands.java
++++ b/net/minecraft/commands/Commands.java
+@@ -158,7 +158,7 @@ public class Commands {
+         //CloneCommands.register(this.dispatcher, context); // Folia - region threading - TODO
+         DamageCommand.register(this.dispatcher, context);
+         //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
+-        //DataPackCommand.register(this.dispatcher); // Folia - region threading - TODO
++        DataPackCommand.register(this.dispatcher); // Folia - region threading // Cuneiform - Enable Datapack listing but no enable/disable
+         //DebugCommand.register(this.dispatcher); // Folia - region threading - TODO
+         DefaultGameModeCommands.register(this.dispatcher);
+         DifficultyCommand.register(this.dispatcher);
+diff --git a/net/minecraft/server/commands/DataPackCommand.java b/net/minecraft/server/commands/DataPackCommand.java
+index 833434868d2c4adc5b28244bbd3d6f5943e9106d..29b4219dae124eee2b4dd9db261f64ca841785e1 100644
+--- a/net/minecraft/server/commands/DataPackCommand.java
++++ b/net/minecraft/server/commands/DataPackCommand.java
+@@ -60,72 +60,74 @@ public class DataPackCommand {
+         dispatcher.register(
+             Commands.literal("datapack")
+                 .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+-                .then(
+-                    Commands.literal("enable")
+-                        .then(
+-                            Commands.argument("name", StringArgumentType.string())
+-                                .suggests(UNSELECTED_PACKS)
+-                                .executes(
+-                                    context -> enablePack(
+-                                        context.getSource(),
+-                                        getPack(context, "name", true),
+-                                        (enabledPacks, packToEnable) -> packToEnable.getDefaultPosition()
+-                                            .insert(enabledPacks, packToEnable, Pack::selectionConfig, false)
+-                                    )
+-                                )
+-                                .then(
+-                                    Commands.literal("after")
+-                                        .then(
+-                                            Commands.argument("existing", StringArgumentType.string())
+-                                                .suggests(SELECTED_PACKS)
+-                                                .executes(
+-                                                    context -> enablePack(
+-                                                        context.getSource(),
+-                                                        getPack(context, "name", true),
+-                                                        (enabledPacks, packToEnable) -> enabledPacks.add(
+-                                                            enabledPacks.indexOf(getPack(context, "existing", false)) + 1, packToEnable
+-                                                        )
+-                                                    )
+-                                                )
+-                                        )
+-                                )
+-                                .then(
+-                                    Commands.literal("before")
+-                                        .then(
+-                                            Commands.argument("existing", StringArgumentType.string())
+-                                                .suggests(SELECTED_PACKS)
+-                                                .executes(
+-                                                    context -> enablePack(
+-                                                        context.getSource(),
+-                                                        getPack(context, "name", true),
+-                                                        (enabledPacks, packToEnable) -> enabledPacks.add(
+-                                                            enabledPacks.indexOf(getPack(context, "existing", false)), packToEnable
+-                                                        )
+-                                                    )
+-                                                )
+-                                        )
+-                                )
+-                                .then(Commands.literal("last").executes(context -> enablePack(context.getSource(), getPack(context, "name", true), List::add)))
+-                                .then(
+-                                    Commands.literal("first")
+-                                        .executes(
+-                                            context -> enablePack(
+-                                                context.getSource(),
+-                                                getPack(context, "name", true),
+-                                                (enabledPacks, packToEnable) -> enabledPacks.add(0, packToEnable)
+-                                            )
+-                                        )
+-                                )
+-                        )
+-                )
+-                .then(
+-                    Commands.literal("disable")
+-                        .then(
+-                            Commands.argument("name", StringArgumentType.string())
+-                                .suggests(SELECTED_PACKS)
+-                                .executes(context -> disablePack(context.getSource(), getPack(context, "name", false)))
+-                        )
+-                )
++// Cuneiform START - Enable Datapack listing but no enable/disable
++//                .then(
++//                    Commands.literal("enable")
++//                        .then(
++//                            Commands.argument("name", StringArgumentType.string())
++//                                .suggests(UNSELECTED_PACKS)
++//                                .executes(
++//                                    context -> enablePack(
++//                                        context.getSource(),
++//                                        getPack(context, "name", true),
++//                                        (enabledPacks, packToEnable) -> packToEnable.getDefaultPosition()
++//                                            .insert(enabledPacks, packToEnable, Pack::selectionConfig, false)
++//                                    )
++//                                )
++//                                .then(
++//                                    Commands.literal("after")
++//                                        .then(
++//                                            Commands.argument("existing", StringArgumentType.string())
++//                                                .suggests(SELECTED_PACKS)
++//                                                .executes(
++//                                                    context -> enablePack(
++//                                                        context.getSource(),
++//                                                        getPack(context, "name", true),
++//                                                        (enabledPacks, packToEnable) -> enabledPacks.add(
++//                                                            enabledPacks.indexOf(getPack(context, "existing", false)) + 1, packToEnable
++//                                                        )
++//                                                    )
++//                                                )
++//                                        )
++//                                )
++//                                .then(
++//                                    Commands.literal("before")
++//                                        .then(
++//                                            Commands.argument("existing", StringArgumentType.string())
++//                                                .suggests(SELECTED_PACKS)
++//                                                .executes(
++//                                                    context -> enablePack(
++//                                                        context.getSource(),
++//                                                        getPack(context, "name", true),
++//                                                        (enabledPacks, packToEnable) -> enabledPacks.add(
++//                                                            enabledPacks.indexOf(getPack(context, "existing", false)), packToEnable
++//                                                        )
++//                                                    )
++//                                                )
++//                                        )
++//                                )
++//                                .then(Commands.literal("last").executes(context -> enablePack(context.getSource(), getPack(context, "name", true), List::add)))
++//                                .then(
++//                                    Commands.literal("first")
++//                                        .executes(
++//                                            context -> enablePack(
++//                                                context.getSource(),
++//                                                getPack(context, "name", true),
++//                                                (enabledPacks, packToEnable) -> enabledPacks.add(0, packToEnable)
++//                                            )
++//                                        )
++//                                )
++//                        )
++//                )
++//                .then(
++//                    Commands.literal("disable")
++//                        .then(
++//                            Commands.argument("name", StringArgumentType.string())
++//                                .suggests(SELECTED_PACKS)
++//                                .executes(context -> disablePack(context.getSource(), getPack(context, "name", false)))
++//                        )
++//                )
++// Cuneiform END
+                 .then(
+                     Commands.literal("list")
+                         .executes(context -> listPacks(context.getSource()))
+@@ -135,23 +137,25 @@ public class DataPackCommand {
+         );
+     }
+ 
+-    private static int enablePack(CommandSourceStack source, Pack pack, DataPackCommand.Inserter priorityCallback) throws CommandSyntaxException {
+-        PackRepository packRepository = source.getServer().getPackRepository();
+-        List<Pack> list = Lists.newArrayList(packRepository.getSelectedPacks());
+-        priorityCallback.apply(list, pack);
+-        source.sendSuccess(() -> Component.translatable("commands.datapack.modify.enable", pack.getChatLink(true)), true);
+-        ReloadCommand.reloadPacks(list.stream().map(Pack::getId).collect(Collectors.toList()), source);
+-        return list.size();
+-    }
+-
+-    private static int disablePack(CommandSourceStack source, Pack pack) {
+-        PackRepository packRepository = source.getServer().getPackRepository();
+-        List<Pack> list = Lists.newArrayList(packRepository.getSelectedPacks());
+-        list.remove(pack);
+-        source.sendSuccess(() -> Component.translatable("commands.datapack.modify.disable", pack.getChatLink(true)), true);
+-        ReloadCommand.reloadPacks(list.stream().map(Pack::getId).collect(Collectors.toList()), source);
+-        return list.size();
+-    }
++// Cuneiform START - Enable Datapack listing but no enable/disable
++//    private static int enablePack(CommandSourceStack source, Pack pack, DataPackCommand.Inserter priorityCallback) throws CommandSyntaxException {
++//        PackRepository packRepository = source.getServer().getPackRepository();
++//        List<Pack> list = Lists.newArrayList(packRepository.getSelectedPacks());
++//        priorityCallback.apply(list, pack);
++//        source.sendSuccess(() -> Component.translatable("commands.datapack.modify.enable", pack.getChatLink(true)), true);
++//        ReloadCommand.reloadPacks(list.stream().map(Pack::getId).collect(Collectors.toList()), source);
++//        return list.size();
++//    }
++//
++//    private static int disablePack(CommandSourceStack source, Pack pack) {
++//        PackRepository packRepository = source.getServer().getPackRepository();
++//        List<Pack> list = Lists.newArrayList(packRepository.getSelectedPacks());
++//        list.remove(pack);
++//        source.sendSuccess(() -> Component.translatable("commands.datapack.modify.disable", pack.getChatLink(true)), true);
++//        ReloadCommand.reloadPacks(list.stream().map(Pack::getId).collect(Collectors.toList()), source);
++//        return list.size();
++//    }
++// Cuneiform END
+ 
+     private static int listPacks(CommandSourceStack source) {
+         return listEnabledPacks(source) + listAvailablePacks(source);
