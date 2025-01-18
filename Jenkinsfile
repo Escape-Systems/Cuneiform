@@ -22,19 +22,21 @@ pipeline {
             }
         }
 
-        parallel {
-            stage('Generate Development Bundle') {
-                steps {
-                    sh './gradlew generateDevelopmentBundle '
-                    findBuildScans()
-                    archiveArtifacts artifacts: 'cuneiform-server/build/libs/paperweight-development-bundle-*.zip', followSymlinks: false
+        stage('Build the artifacts') {
+            parallel {
+                stage('Generate Development Bundle') {
+                    steps {
+                        sh './gradlew generateDevelopmentBundle '
+                        findBuildScans()
+                        archiveArtifacts artifacts: 'cuneiform-server/build/libs/paperweight-development-bundle-*.zip', followSymlinks: false
+                    }
                 }
-            }
-            stage('Generate Paperclip Jar') {
-                steps {
-                    sh './gradlew createMojmapPaperclipJar'
-                    findBuildScans()
-                    archiveArtifacts artifacts: 'cuneiform-server/build/libs/cuneiform-paperclip-*-mojmap.jar', followSymlinks: false
+                stage('Generate Paperclip Jar') {
+                    steps {
+                        sh './gradlew createMojmapPaperclipJar'
+                        findBuildScans()
+                        archiveArtifacts artifacts: 'cuneiform-server/build/libs/cuneiform-paperclip-*-mojmap.jar', followSymlinks: false
+                    }
                 }
             }
         }
