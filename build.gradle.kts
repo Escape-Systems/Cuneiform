@@ -81,6 +81,7 @@ subprojects {
         }
     }
 
+
     extensions.configure<PublishingExtension> {
         repositories {
 
