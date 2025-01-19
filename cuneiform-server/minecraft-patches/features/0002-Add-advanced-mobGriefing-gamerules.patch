@@ -5,7 +5,7 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0cc5607080f79f9e9b65606a3e16fd4961368b02..eed0dcb5dc8302acb49c18fb01f9d5c86b675655 100644
+index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..2753882d904c7058d1d1fbf62458e43febc0f167 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -101,7 +101,9 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
@@ -52,21 +52,284 @@ index afe43600c4976e01e61d716034a2823d50fb55cb..0c11b0a4f4dc47732872a3854b9557f1
                      boolean flag = false;
                      int alternativeTarget = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
                      int floor = Mth.floor(this.getBbHeight());
+diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
+index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9c8dbb22f 100644
+--- a/net/minecraft/world/entity/monster/EnderMan.java
++++ b/net/minecraft/world/entity/monster/EnderMan.java
+@@ -4,6 +4,7 @@ import java.util.EnumSet;
+ import java.util.Optional;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
++
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.component.DataComponents;
+@@ -69,12 +70,12 @@ import net.minecraft.world.phys.Vec3;
+ public class EnderMan extends Monster implements NeutralMob {
+     private static final ResourceLocation SPEED_MODIFIER_ATTACKING_ID = ResourceLocation.withDefaultNamespace("attacking");
+     private static final AttributeModifier SPEED_MODIFIER_ATTACKING = new AttributeModifier(
+-        SPEED_MODIFIER_ATTACKING_ID, 0.15F, AttributeModifier.Operation.ADD_VALUE
++            SPEED_MODIFIER_ATTACKING_ID, 0.15F, AttributeModifier.Operation.ADD_VALUE
+     );
+     private static final int DELAY_BETWEEN_CREEPY_STARE_SOUND = 400;
+     private static final int MIN_DEAGGRESSION_TIME = 600;
+     private static final EntityDataAccessor<Optional<BlockState>> DATA_CARRY_STATE = SynchedEntityData.defineId(
+-        EnderMan.class, EntityDataSerializers.OPTIONAL_BLOCK_STATE
++            EnderMan.class, EntityDataSerializers.OPTIONAL_BLOCK_STATE
+     );
+     private static final EntityDataAccessor<Boolean> DATA_CREEPY = SynchedEntityData.defineId(EnderMan.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> DATA_STARED_AT = SynchedEntityData.defineId(EnderMan.class, EntityDataSerializers.BOOLEAN);
+@@ -108,11 +109,11 @@ public class EnderMan extends Monster implements NeutralMob {
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+         return Monster.createMonsterAttributes()
+-            .add(Attributes.MAX_HEALTH, 40.0)
+-            .add(Attributes.MOVEMENT_SPEED, 0.3F)
+-            .add(Attributes.ATTACK_DAMAGE, 7.0)
+-            .add(Attributes.FOLLOW_RANGE, 64.0)
+-            .add(Attributes.STEP_HEIGHT, 1.0);
++                .add(Attributes.MAX_HEALTH, 40.0)
++                .add(Attributes.MOVEMENT_SPEED, 0.3F)
++                .add(Attributes.ATTACK_DAMAGE, 7.0)
++                .add(Attributes.FOLLOW_RANGE, 64.0)
++                .add(Attributes.STEP_HEIGHT, 1.0);
+     }
+ 
+     @Override
+@@ -235,6 +236,7 @@ public class EnderMan extends Monster implements NeutralMob {
+         event.setCancelled(!shouldAttack);
+         return event.callEvent();
+     }
++
+     private boolean isBeingStaredBy0(Player player) {
+         // Paper end - EndermanAttackPlayerEvent
+         return LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(player) && this.isLookingAtMe(player, 0.025, true, false, new double[]{this.getEyeY()});
+@@ -245,21 +247,21 @@ public class EnderMan extends Monster implements NeutralMob {
+         if (this.level().isClientSide) {
+             for (int i = 0; i < 2; i++) {
+                 this.level()
+-                    .addParticle(
+-                        ParticleTypes.PORTAL,
+-                        this.getRandomX(0.5),
+-                        this.getRandomY() - 0.25,
+-                        this.getRandomZ(0.5),
+-                        (this.random.nextDouble() - 0.5) * 2.0,
+-                        -this.random.nextDouble(),
+-                        (this.random.nextDouble() - 0.5) * 2.0
+-                    );
++                        .addParticle(
++                                ParticleTypes.PORTAL,
++                                this.getRandomX(0.5),
++                                this.getRandomY() - 0.25,
++                                this.getRandomZ(0.5),
++                                (this.random.nextDouble() - 0.5) * 2.0,
++                                -this.random.nextDouble(),
++                                (this.random.nextDouble() - 0.5) * 2.0
++                        );
+             }
+         }
+ 
+         this.jumping = false;
+         if (!this.level().isClientSide) {
+-            this.updatePersistentAnger((ServerLevel)this.level(), true);
++            this.updatePersistentAnger((ServerLevel) this.level(), true);
+         }
+ 
+         super.aiStep();
+@@ -275,8 +277,8 @@ public class EnderMan extends Monster implements NeutralMob {
+         if (level.isDay() && this.tickCount >= this.targetChangeTime + 600) {
+             float lightLevelDependentMagicValue = this.getLightLevelDependentMagicValue();
+             if (lightLevelDependentMagicValue > 0.5F
+-                && level.canSeeSky(this.blockPosition())
+-                && this.random.nextFloat() * 30.0F < (lightLevelDependentMagicValue - 0.4F) * 2.0F && this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.RUNAWAY)) { // Paper - EndermanEscapeEvent
++                    && level.canSeeSky(this.blockPosition())
++                    && this.random.nextFloat() * 30.0F < (lightLevelDependentMagicValue - 0.4F) * 2.0F && this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.RUNAWAY)) { // Paper - EndermanEscapeEvent
+                 this.setTarget(null);
+                 this.teleport();
+             }
+@@ -355,16 +357,16 @@ public class EnderMan extends Monster implements NeutralMob {
+         if (carriedBlock != null) {
+             ItemStack itemStack = new ItemStack(Items.DIAMOND_AXE);
+             EnchantmentHelper.enchantItemFromProvider(
+-                itemStack,
+-                level.registryAccess(),
+-                VanillaEnchantmentProviders.ENDERMAN_LOOT_DROP,
+-                level.getCurrentDifficultyAt(this.blockPosition()),
+-                this.getRandom()
++                    itemStack,
++                    level.registryAccess(),
++                    VanillaEnchantmentProviders.ENDERMAN_LOOT_DROP,
++                    level.getCurrentDifficultyAt(this.blockPosition()),
++                    this.getRandom()
+             );
+-            LootParams.Builder builder = new LootParams.Builder((ServerLevel)this.level())
+-                .withParameter(LootContextParams.ORIGIN, this.position())
+-                .withParameter(LootContextParams.TOOL, itemStack)
+-                .withOptionalParameter(LootContextParams.THIS_ENTITY, this);
++            LootParams.Builder builder = new LootParams.Builder((ServerLevel) this.level())
++                    .withParameter(LootContextParams.ORIGIN, this.position())
++                    .withParameter(LootContextParams.TOOL, itemStack)
++                    .withOptionalParameter(LootContextParams.THIS_ENTITY, this);
+ 
+             for (ItemStack itemStack1 : carriedBlock.getDrops(builder)) {
+                 this.spawnAtLocation(level, itemStack1);
+@@ -395,14 +397,14 @@ public class EnderMan extends Monster implements NeutralMob {
+ 
+                 return flag1;
+             } else {
+-                boolean flag1 = flag && this.hurtWithCleanWater(level, damageSource, (ThrownPotion)damageSource.getDirectEntity(), amount);
++                boolean flag1 = flag && this.hurtWithCleanWater(level, damageSource, (ThrownPotion) damageSource.getDirectEntity(), amount);
+ 
+                 if (this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.INDIRECT)) { // Paper - EndermanEscapeEvent
+-                for (int i = 0; i < 64; i++) {
+-                    if (this.teleport()) {
+-                        return true;
++                    for (int i = 0; i < 64; i++) {
++                        if (this.teleport()) {
++                            return true;
++                        }
+                     }
+-                }
+                 } // Paper - EndermanEscapeEvent
+ 
+                 return flag1;
+@@ -460,7 +462,7 @@ public class EnderMan extends Monster implements NeutralMob {
+                 return false;
+             } else {
+                 double d = this.target.distanceToSqr(this.enderman);
+-                return !(d > 256.0) && this.enderman.isBeingStaredBy((Player)this.target);
++                return !(d > 256.0) && this.enderman.isBeingStaredBy((Player) this.target);
+             }
+         }
+ 
+@@ -485,8 +487,9 @@ public class EnderMan extends Monster implements NeutralMob {
+         @Override
+         public boolean canUse() {
+             return this.enderman.getCarriedBlock() != null
+-                && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+-                && this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
++                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_ENDERMAN_GRIEFING)
++                    && this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
+         }
+ 
+         @Override
+@@ -506,28 +509,28 @@ public class EnderMan extends Monster implements NeutralMob {
+                 carriedBlock = Block.updateFromNeighbourShapes(carriedBlock, this.enderman.level(), blockPos);
+                 if (this.canPlaceBlock(level, blockPos, carriedBlock, blockState, blockState1, blockPos1)) {
+                     if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockPos, carriedBlock)) { // CraftBukkit - Place event
+-                    level.setBlock(blockPos, carriedBlock, 3);
+-                    level.gameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Context.of(this.enderman, carriedBlock));
+-                    this.enderman.setCarriedBlock(null);
++                        level.setBlock(blockPos, carriedBlock, 3);
++                        level.gameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Context.of(this.enderman, carriedBlock));
++                        this.enderman.setCarriedBlock(null);
+                     } // CraftBukkit
+                 }
+             }
+         }
+ 
+         private boolean canPlaceBlock(
+-            Level level,
+-            BlockPos destinationPos,
+-            BlockState carriedState,
+-            BlockState destinationState,
+-            BlockState belowDestinationState,
+-            BlockPos belowDestinationPos
++                Level level,
++                BlockPos destinationPos,
++                BlockState carriedState,
++                BlockState destinationState,
++                BlockState belowDestinationState,
++                BlockPos belowDestinationPos
+         ) {
+             return destinationState.isAir()
+-                && !belowDestinationState.isAir()
+-                && !belowDestinationState.is(Blocks.BEDROCK)
+-                && belowDestinationState.isCollisionShapeFullBlock(level, belowDestinationPos)
+-                && carriedState.canSurvive(level, destinationPos)
+-                && level.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(destinationPos))).isEmpty();
++                    && !belowDestinationState.isAir()
++                    && !belowDestinationState.is(Blocks.BEDROCK)
++                    && belowDestinationState.isCollisionShapeFullBlock(level, belowDestinationPos)
++                    && carriedState.canSurvive(level, destinationPos)
++                    && level.getEntities(this.enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(destinationPos))).isEmpty();
+         }
+     }
+ 
+@@ -544,8 +547,8 @@ public class EnderMan extends Monster implements NeutralMob {
+         public EndermanLookForPlayerGoal(EnderMan enderman, @Nullable TargetingConditions.Selector selector) {
+             super(enderman, Player.class, 10, false, false, selector);
+             this.enderman = enderman;
+-            this.isAngerInducing = (entity, level) -> (enderman.isBeingStaredBy((Player)entity) || enderman.isAngryAt(entity, level))
+-                && !enderman.hasIndirectPassenger(entity);
++            this.isAngerInducing = (entity, level) -> (enderman.isBeingStaredBy((Player) entity) || enderman.isAngryAt(entity, level))
++                    && !enderman.hasIndirectPassenger(entity);
+             this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(this.isAngerInducing);
+         }
+ 
+@@ -606,15 +609,15 @@ public class EnderMan extends Monster implements NeutralMob {
+                 }
+             } else {
+                 if (this.target != null && !this.enderman.isPassenger()) {
+-                    if (this.enderman.isBeingStaredBy((Player)this.target)) {
++                    if (this.enderman.isBeingStaredBy((Player) this.target)) {
+                         if (this.target.distanceToSqr(this.enderman) < 16.0 && this.enderman.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.STARE)) { // Paper - EndermanEscapeEvent
+                             this.enderman.teleport();
+                         }
+ 
+                         this.teleportTime = 0;
+                     } else if (this.target.distanceToSqr(this.enderman) > 256.0
+-                        && this.teleportTime++ >= this.adjustedTickDelay(30)
+-                        && this.enderman.teleportTowards(this.target)) {
++                            && this.teleportTime++ >= this.adjustedTickDelay(30)
++                            && this.enderman.teleportTowards(this.target)) {
+                         this.teleportTime = 0;
+                     }
+                 }
+@@ -634,8 +637,8 @@ public class EnderMan extends Monster implements NeutralMob {
+         @Override
+         public boolean canUse() {
+             return this.enderman.getCarriedBlock() == null
+-                && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+-                && this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
++                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++                    && this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
+         }
+ 
+         @Override
+@@ -654,9 +657,9 @@ public class EnderMan extends Monster implements NeutralMob {
+             boolean flag = blockHitResult.getBlockPos().equals(blockPos);
+             if (blockState.is(BlockTags.ENDERMAN_HOLDABLE) && flag) {
+                 if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockPos, blockState.getFluidState().createLegacyBlock())) { // CraftBukkit - Place event // Paper - fix wrong block state
+-                level.removeBlock(blockPos, false);
+-                level.gameEvent(GameEvent.BLOCK_DESTROY, blockPos, GameEvent.Context.of(this.enderman, blockState));
+-                this.enderman.setCarriedBlock(blockState.getBlock().defaultBlockState());
++                    level.removeBlock(blockPos, false);
++                    level.gameEvent(GameEvent.BLOCK_DESTROY, blockPos, GameEvent.Context.of(this.enderman, blockState));
++                    this.enderman.setCarriedBlock(blockState.getBlock().defaultBlockState());
+                 } // CraftBukkit
+             }
+         }
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
-index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..77191b50dbac11b187795f3bd3e01e50546390f0 100644
+index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..fbf7a0364673757b79d29b2af26aee7659f1ebb4 100644
 --- a/net/minecraft/world/level/GameRules.java
 +++ b/net/minecraft/world/level/GameRules.java
-@@ -228,6 +228,16 @@ public class GameRules {
+@@ -228,6 +228,20 @@ public class GameRules {
      );
      // Cuneiform END
  
 +    // Cuneiform START - Add more gamerules for mobGriefing.
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_WITHER_GRIEFING = register(
-+            "witherGriefing", GameRules.Category.SPAWNING, GameRules.BooleanValue.create(false)
++            "witherGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
 +
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_CREEPER_GRIEFING = register(
-+            "creeperGriefing", GameRules.Category.SPAWNING, GameRules.BooleanValue.create(false)
++            "creeperGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
++    );
++
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_ENDERMAN_GRIEFING = register(
++            "endermanGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
 +    // Cueiform END
 +

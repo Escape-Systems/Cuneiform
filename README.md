@@ -12,6 +12,7 @@ needs and wants.
   - `doBatSpawn` Disables the natural spawning of Bats.
   - `witherGriefing` Disables mob-griefing specifically from the Wither.
   - `creeperGriefing` Disables mob-griefing specifically from creepers.
+  - `endermanGriefing` Disables mob-griefing specifically from endermen.
 - JSON Logging output for automated log ingestion
 
 <details>
