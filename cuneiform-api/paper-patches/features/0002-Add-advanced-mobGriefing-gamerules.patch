@@ -5,10 +5,10 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index f05bc95b9f61540b0126391439b0287c95041e85..f9d0ea6b7e51ccae500eba0c60d89dbd5f44cbb3 100644
+index f05bc95b9f61540b0126391439b0287c95041e85..d447d59bd93ebba5128c8dd27f936d4fe07794db 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -297,12 +297,24 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -297,12 +297,29 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
      public static final GameRule<Integer> SPAWN_CHUNK_RADIUS = new GameRule<>("spawnChunkRadius", Integer.class);
  
  
@@ -29,6 +29,11 @@ index f05bc95b9f61540b0126391439b0287c95041e85..f9d0ea6b7e51ccae500eba0c60d89dbd
 +     * Whether creepers will destroy blocks.
 +     */
 +    public static final GameRule<Boolean> CREEPER_GRIEFING = new GameRule<>("creeperGriefing", Boolean.class);
++
++    /**
++     * Whether endermen will carry blocks.
++     */
++    public static final GameRule<Boolean> ENDERMAN_GRIEFING = new GameRule<>("endermanGriefing", Boolean.class);
 +    // Cuneiform END
  
      // All GameRules instantiated above this for organizational purposes
