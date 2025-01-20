@@ -13,6 +13,7 @@ needs and wants.
   - `witherGriefing` Disables mob-griefing specifically from the Wither.
   - `creeperGriefing` Disables mob-griefing specifically from creepers.
   - `endermanGriefing` Disables mob-griefing specifically from endermen.
+- Gamerule to revert to pre-1.21.4 Shulker bullet behavior `shulkerBulletInteractions`
 - JSON Logging output for automated log ingestion
 
 <details>
