@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Mon, 20 Jan 2025 12:51:38 -0600
+Subject: [PATCH] Return to pre-1.21.4 ShulkerBullets
+
+Revert to [MC-271346](https://bugs.mojang.com/browse/MC-271346) behavior
+via gamerule.
+
+Tracking of this issue in 1.21.4 [MC-279662](https://bugs.mojang.com/browse/MC-279662)
+
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index d447d59bd93ebba5128c8dd27f936d4fe07794db..5027cf1b16f4aa0b088e03dd933e0a4aff076f1c 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -320,7 +320,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+      */
+     public static final GameRule<Boolean> ENDERMAN_GRIEFING = new GameRule<>("endermanGriefing", Boolean.class);
+     // Cuneiform END
+-
++    // Cuneiform START - Pre-1.21.4 Shulker Bullets
++    /**
++     * Whether shulker bullets will be destroyed by fire/lava/soulfire.
++     */
++    public static final GameRule<Boolean> SHULKER_BULLET_INTERACTIONS = new GameRule<>("shulkerBulletInteractions", Boolean.class);
++    // Cuneiform END
++    
+     // All GameRules instantiated above this for organizational purposes
+     private final String name;
+     private final Class<T> type;

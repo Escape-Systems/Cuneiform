@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Mon, 20 Jan 2025 12:09:26 -0600
+Subject: [PATCH] Return to pre-1.21.4 ShulkerBullets
+
+Revert to [MC-271346](https://bugs.mojang.com/browse/MC-271346) behavior
+via gamerule.
+
+Tracking of this issue in 1.21.4 [MC-279662](https://bugs.mojang.com/browse/MC-279662)
+
+diff --git a/net/minecraft/world/entity/projectile/ShulkerBullet.java b/net/minecraft/world/entity/projectile/ShulkerBullet.java
+index 45ccfa92fe06a3f5041dac1ddd5550e5a89d8d80..d9b15cee79f8138bcd5e287b2c46e1463ac18f3c 100644
+--- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
++++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
+@@ -24,6 +24,7 @@ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
++import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.phys.BlockHitResult;
+@@ -59,6 +60,15 @@ public class ShulkerBullet extends Projectile {
+         this.selectNextMoveDirection(axis);
+         this.projectileSource = shooter.getBukkitLivingEntity(); // CraftBukkit
+     }
++    // Cuneiform START - Pre-1.21.4 Shulker Bullets
++    @Override
++    protected boolean isAffectedByBlocks() {
++        if (this.getServer().getGameRules().getBoolean(GameRules.RULE_SHULKER_BULLET_INTERACTIONS))
++            return true;
++        return super.isAffectedByBlocks();
++    }
++    // Cuneiform END
++
+ 
+     // CraftBukkit start
+     @Nullable
+diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
+index fbf7a0364673757b79d29b2af26aee7659f1ebb4..54cf5883a75cbc3fdc53e1f9e9a0742b2a49ee91 100644
+--- a/net/minecraft/world/level/GameRules.java
++++ b/net/minecraft/world/level/GameRules.java
+@@ -242,6 +242,12 @@ public class GameRules {
+     );
+     // Cueiform END
+ 
++    // Cuneiform START - Pre-1.21.4 Shulker Bullets
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_SHULKER_BULLET_INTERACTIONS = register(
++        "shulkerBulletInteractions", Category.MISC, GameRules.BooleanValue.create(false)
++    );
++    // Cuneiform END
++
+     private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
+     private final FeatureFlagSet enabledFeatures;
+     private final GameRules.Value<?>[] gameruleArray; // Paper - Perf: Use array for gamerule storage
