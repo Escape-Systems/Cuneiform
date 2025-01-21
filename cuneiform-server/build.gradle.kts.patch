@@ -78,7 +78,7 @@
 @@ -165,6 +_,7 @@
          isTransitive = false
      }
-     implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Add support for proxy protocol
+     implementation("io.netty:netty-codec-haproxy:4.1.115.Final") // Add support for proxy protocol
 +    implementation("org.apache.logging.log4j:log4j-layout-template-json:2.24.1") // Cuneiform - JSON Logging
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.7.1")
