@@ -37,10 +37,10 @@ index 45ccfa92fe06a3f5041dac1ddd5550e5a89d8d80..d9b15cee79f8138bcd5e287b2c46e146
      // CraftBukkit start
      @Nullable
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
-index fbf7a0364673757b79d29b2af26aee7659f1ebb4..54cf5883a75cbc3fdc53e1f9e9a0742b2a49ee91 100644
+index 951af23665401be78ebea387c0b6ae84edcced29..10ee1fb5c13c91adf29968d1a79b9df142001ee6 100644
 --- a/net/minecraft/world/level/GameRules.java
 +++ b/net/minecraft/world/level/GameRules.java
-@@ -242,6 +242,12 @@ public class GameRules {
+@@ -245,6 +245,12 @@ public class GameRules {
      );
      // Cueiform END
  

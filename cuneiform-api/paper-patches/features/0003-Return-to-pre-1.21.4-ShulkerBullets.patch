@@ -9,12 +9,12 @@ via gamerule.
 Tracking of this issue in 1.21.4 [MC-279662](https://bugs.mojang.com/browse/MC-279662)
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index d447d59bd93ebba5128c8dd27f936d4fe07794db..5027cf1b16f4aa0b088e03dd933e0a4aff076f1c 100644
+index a033b4ba73af82a60f79b0295ba418f7d3f9784b..1d68fa3c346a751adc353e99551312aeebeb6e69 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -320,7 +320,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -325,7 +325,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
-     public static final GameRule<Boolean> ENDERMAN_GRIEFING = new GameRule<>("endermanGriefing", Boolean.class);
+     public static final GameRule<Boolean> BREAK_DOORS = new GameRule<>("breakDoors", Boolean.class);
      // Cuneiform END
 -
 +    // Cuneiform START - Pre-1.21.4 Shulker Bullets

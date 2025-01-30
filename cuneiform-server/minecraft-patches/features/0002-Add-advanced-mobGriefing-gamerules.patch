@@ -39,6 +39,18 @@ index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..2753882d904c7058d1d1fbf62458e43f
          Vec3 vec3 = new Vec3(x, y, z);
          ServerExplosion serverExplosion = new ServerExplosion(this, source, damageSource, damageCalculator, vec3, radius, fire, blockInteraction);
          if (configurator != null) configurator.accept(serverExplosion);// Paper - Allow explosions to damage source
+diff --git a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
+index e026e07ca86700c864a3dceda6817fb7b6cb11e9..56ab852725e1a96a270a3d673988167261dee86e 100644
+--- a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
++++ b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
+@@ -31,6 +31,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
+     public boolean canUse() {
+         return super.canUse()
+             && getServerLevel(this.mob).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++            && getServerLevel(this.mob).getGameRules().getBoolean(GameRules.RULE_BREAK_DOORS) // Cuneiform Add more gamerules for mobGriefing.
+             && this.isValidDifficulty(this.mob.level().getDifficulty())
+             && !this.isOpen();
+     }
 diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
 index afe43600c4976e01e61d716034a2823d50fb55cb..0c11b0a4f4dc47732872a3854b9557f1c20364d0 100644
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
@@ -312,10 +324,18 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
              }
          }
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
-index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..fbf7a0364673757b79d29b2af26aee7659f1ebb4 100644
+index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..951af23665401be78ebea387c0b6ae84edcced29 100644
 --- a/net/minecraft/world/level/GameRules.java
 +++ b/net/minecraft/world/level/GameRules.java
-@@ -228,6 +228,20 @@ public class GameRules {
+@@ -24,7 +24,6 @@ import net.minecraft.commands.Commands;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+ import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+-import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.flag.FeatureFlagSet;
+@@ -228,6 +227,24 @@ public class GameRules {
      );
      // Cuneiform END
  
@@ -330,6 +350,10 @@ index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..fbf7a0364673757b79d29b2af26aee76
 +
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_ENDERMAN_GRIEFING = register(
 +            "endermanGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
++    );
++
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_BREAK_DOORS = register(
++        "breakDoors", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
 +    // Cueiform END
 +
