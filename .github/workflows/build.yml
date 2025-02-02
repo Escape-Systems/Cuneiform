@@ -10,6 +10,8 @@ jobs:
     # Only run on PRs if the source branch is on someone else's repo
     if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v4
@@ -28,3 +30,4 @@ jobs:
         run: ./gradlew build --scan
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v4
+
