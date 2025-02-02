@@ -26,3 +26,5 @@ jobs:
         run: ./gradlew applyAllPatches --stacktrace --scan
       - name: Build
         run: ./gradlew build --scan
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v4
