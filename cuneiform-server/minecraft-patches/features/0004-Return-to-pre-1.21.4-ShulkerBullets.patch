@@ -9,7 +9,7 @@ via gamerule.
 Tracking of this issue in 1.21.4 [MC-279662](https://bugs.mojang.com/browse/MC-279662)
 
 diff --git a/net/minecraft/world/entity/projectile/ShulkerBullet.java b/net/minecraft/world/entity/projectile/ShulkerBullet.java
-index 45ccfa92fe06a3f5041dac1ddd5550e5a89d8d80..d9b15cee79f8138bcd5e287b2c46e1463ac18f3c 100644
+index 45ccfa92fe06a3f5041dac1ddd5550e5a89d8d80..f463ca891231d634c0a1d6276b431f965107b229 100644
 --- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
 +++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
 @@ -24,6 +24,7 @@ import net.minecraft.world.entity.EntityType;
@@ -26,7 +26,7 @@ index 45ccfa92fe06a3f5041dac1ddd5550e5a89d8d80..d9b15cee79f8138bcd5e287b2c46e146
      }
 +    // Cuneiform START - Pre-1.21.4 Shulker Bullets
 +    @Override
-+    protected boolean isAffectedByBlocks() {
++    public boolean isAffectedByBlocks() {
 +        if (this.getServer().getGameRules().getBoolean(GameRules.RULE_SHULKER_BULLET_INTERACTIONS))
 +            return true;
 +        return super.isAffectedByBlocks();
