@@ -65,7 +65,7 @@ index afe43600c4976e01e61d716034a2823d50fb55cb..0c11b0a4f4dc47732872a3854b9557f1
                      int alternativeTarget = Mth.floor(this.getBbWidth() / 2.0F + 1.0F);
                      int floor = Mth.floor(this.getBbHeight());
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9c8dbb22f 100644
+index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..c955a2c59ddb6e88a985cfe4d49c6dd0aeeb121b 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
 @@ -4,6 +4,7 @@ import java.util.EnumSet;
@@ -214,19 +214,18 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
              }
          }
  
-@@ -485,8 +487,9 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -485,8 +487,8 @@ public class EnderMan extends Monster implements NeutralMob {
          @Override
          public boolean canUse() {
              return this.enderman.getCarriedBlock() != null
 -                && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
 -                && this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
 +                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
-+                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_ENDERMAN_GRIEFING)
 +                    && this.enderman.getRandom().nextInt(reducedTickDelay(2000)) == 0;
          }
  
          @Override
-@@ -506,28 +509,28 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -506,28 +508,28 @@ public class EnderMan extends Monster implements NeutralMob {
                  carriedBlock = Block.updateFromNeighbourShapes(carriedBlock, this.enderman.level(), blockPos);
                  if (this.canPlaceBlock(level, blockPos, carriedBlock, blockState, blockState1, blockPos1)) {
                      if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockPos, carriedBlock)) { // CraftBukkit - Place event
@@ -269,7 +268,7 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
          }
      }
  
-@@ -544,8 +547,8 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -544,8 +546,8 @@ public class EnderMan extends Monster implements NeutralMob {
          public EndermanLookForPlayerGoal(EnderMan enderman, @Nullable TargetingConditions.Selector selector) {
              super(enderman, Player.class, 10, false, false, selector);
              this.enderman = enderman;
@@ -280,7 +279,7 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
              this.startAggroTargetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(this.isAngerInducing);
          }
  
-@@ -606,15 +609,15 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -606,15 +608,15 @@ public class EnderMan extends Monster implements NeutralMob {
                  }
              } else {
                  if (this.target != null && !this.enderman.isPassenger()) {
@@ -299,13 +298,14 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
                          this.teleportTime = 0;
                      }
                  }
-@@ -634,8 +637,8 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -634,8 +636,9 @@ public class EnderMan extends Monster implements NeutralMob {
          @Override
          public boolean canUse() {
              return this.enderman.getCarriedBlock() == null
 -                && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
 -                && this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
 +                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
++                    && getServerLevel(this.enderman).getGameRules().getBoolean(GameRules.RULE_ENDERMAN_GRIEFING)
 +                    && this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
          }
  
@@ -324,7 +324,7 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..da2d0d46963d5007195438b7713829d9
              }
          }
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
-index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..951af23665401be78ebea387c0b6ae84edcced29 100644
+index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..255e9dcb02542d4de0286e2a9cc329880440946a 100644
 --- a/net/minecraft/world/level/GameRules.java
 +++ b/net/minecraft/world/level/GameRules.java
 @@ -24,7 +24,6 @@ import net.minecraft.commands.Commands;
@@ -355,7 +355,7 @@ index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..951af23665401be78ebea387c0b6ae84
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_BREAK_DOORS = register(
 +        "breakDoors", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
-+    // Cueiform END
++    // Cuneiform END
 +
      private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
      private final FeatureFlagSet enabledFeatures;
