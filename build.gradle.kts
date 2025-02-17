@@ -32,12 +32,6 @@ paperweight {
             patchesDir = file("cuneiform-api/folia-patches")
             outputDir = file("folia-api")
         }
-//        patchDir("foliaServer") {
-//            upstreamPath = "folia-server"
-//            excludes = listOf("build.gradle.kts", "build.gradle.kts.patch", "paper-patches")
-//            patchesDir = file("cuneiform-server/folia-patches")
-//            outputDir = file("folia-server")
-//        }
     }
 }
 

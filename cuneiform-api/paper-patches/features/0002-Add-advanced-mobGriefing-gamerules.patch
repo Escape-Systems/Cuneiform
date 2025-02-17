@@ -5,10 +5,10 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index f05bc95b9f61540b0126391439b0287c95041e85..a033b4ba73af82a60f79b0295ba418f7d3f9784b 100644
+index f05bc95b9f61540b0126391439b0287c95041e85..e0e70c7ee7dd1a7dc9be431285f563047239651f 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -297,12 +297,34 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -297,12 +297,39 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
      public static final GameRule<Integer> SPAWN_CHUNK_RADIUS = new GameRule<>("spawnChunkRadius", Integer.class);
  
  
@@ -34,6 +34,11 @@ index f05bc95b9f61540b0126391439b0287c95041e85..a033b4ba73af82a60f79b0295ba418f7
 +     * Whether endermen will carry blocks.
 +     */
 +    public static final GameRule<Boolean> ENDERMAN_GRIEFING = new GameRule<>("endermanGriefing", Boolean.class);
++
++    /**
++     * Whether ghasts can explode blocks,
++     */
++    public static final GameRule<Boolean> GHAST_GRIEFING = new GameRule<>("ghastGriefing", Boolean.class);
 +
 +    /**
 +     * Whether mobs that use BreakDoorGoal will break doors.

@@ -5,20 +5,21 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..2753882d904c7058d1d1fbf62458e43febc0f167 100644
+index 9cbd692680c66331ae8e1544ee8d2a7317262d01..63bdcd977f876c04374c6726f3abe940abf28bf5 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -101,7 +101,9 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+@@ -101,7 +101,10 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  import net.minecraft.world.entity.animal.horse.SkeletonHorse;
  import net.minecraft.world.entity.boss.EnderDragonPart;
  import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 +import net.minecraft.world.entity.monster.Creeper;
  import net.minecraft.world.entity.player.Player;
++import net.minecraft.world.entity.projectile.LargeFireball;
 +import net.minecraft.world.entity.projectile.WitherSkull;
  import net.minecraft.world.entity.raid.Raid;
  import net.minecraft.world.entity.raid.Raids;
  import net.minecraft.world.flag.FeatureFlagSet;
-@@ -1955,6 +1957,20 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1957,6 +1960,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              case TRIGGER -> Explosion.BlockInteraction.TRIGGER_BLOCK;
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
@@ -28,10 +29,8 @@ index d34ad333b6ea3855a24a58fcd80ccf19b2bbf41c..2753882d904c7058d1d1fbf62458e43f
 +            switch (source ) {
 +                case WitherSkull ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
 +                case Creeper ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_CREEPER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
-+                case null -> {}
-+                default -> {
-+                    System.out.println("Explosion from entity: " + source);
-+                }
++                case LargeFireball ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_GHAST_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case null, default -> {}
 +            }
 +        }
 +        // Cuneiform END
@@ -324,7 +323,7 @@ index 4b5ffd278e0e9d47100e5452949e8d757bbfece4..c955a2c59ddb6e88a985cfe4d49c6dd0
              }
          }
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
-index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..255e9dcb02542d4de0286e2a9cc329880440946a 100644
+index 4e7f740f4b753297a41ee4d6c3a8234161e21301..4f1031a6c448a67bd9646b7c9d1736936bb0f024 100644
 --- a/net/minecraft/world/level/GameRules.java
 +++ b/net/minecraft/world/level/GameRules.java
 @@ -24,7 +24,6 @@ import net.minecraft.commands.Commands;
@@ -335,7 +334,7 @@ index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..255e9dcb02542d4de0286e2a9cc32988
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.world.flag.FeatureFlagSet;
-@@ -228,6 +227,24 @@ public class GameRules {
+@@ -228,6 +227,28 @@ public class GameRules {
      );
      // Cuneiform END
  
@@ -352,8 +351,12 @@ index 7fcbde2cc8be51559a9cad341e329d6f6a1a1283..255e9dcb02542d4de0286e2a9cc32988
 +            "endermanGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
 +
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_GHAST_GRIEFING = register(
++            "ghastGriefing", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
++    );
++
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_BREAK_DOORS = register(
-+        "breakDoors", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
++            "breakDoors", GameRules.Category.MOBS, GameRules.BooleanValue.create(false)
 +    );
 +    // Cuneiform END
 +

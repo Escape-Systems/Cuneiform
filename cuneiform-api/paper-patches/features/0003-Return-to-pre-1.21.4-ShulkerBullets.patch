@@ -9,10 +9,10 @@ via gamerule.
 Tracking of this issue in 1.21.4 [MC-279662](https://bugs.mojang.com/browse/MC-279662)
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index a033b4ba73af82a60f79b0295ba418f7d3f9784b..1d68fa3c346a751adc353e99551312aeebeb6e69 100644
+index e0e70c7ee7dd1a7dc9be431285f563047239651f..36f8013fa95bb42b4cda2a926be900acefc3f5da 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -325,7 +325,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -330,7 +330,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
      public static final GameRule<Boolean> BREAK_DOORS = new GameRule<>("breakDoors", Boolean.class);
      // Cuneiform END
