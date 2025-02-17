@@ -5,13 +5,14 @@ Subject: [PATCH] Add advanced mobGriefing gamerules
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 9cbd692680c66331ae8e1544ee8d2a7317262d01..63bdcd977f876c04374c6726f3abe940abf28bf5 100644
+index 9cbd692680c66331ae8e1544ee8d2a7317262d01..0f41c966f9450c3f4a017d06f19992683b6a9060 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -101,7 +101,10 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+@@ -101,7 +101,11 @@ import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  import net.minecraft.world.entity.animal.horse.SkeletonHorse;
  import net.minecraft.world.entity.boss.EnderDragonPart;
  import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
++import net.minecraft.world.entity.boss.wither.WitherBoss;
 +import net.minecraft.world.entity.monster.Creeper;
  import net.minecraft.world.entity.player.Player;
 +import net.minecraft.world.entity.projectile.LargeFireball;
@@ -19,7 +20,7 @@ index 9cbd692680c66331ae8e1544ee8d2a7317262d01..63bdcd977f876c04374c6726f3abe940
  import net.minecraft.world.entity.raid.Raid;
  import net.minecraft.world.entity.raid.Raids;
  import net.minecraft.world.flag.FeatureFlagSet;
-@@ -1957,6 +1960,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1957,6 +1961,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              case TRIGGER -> Explosion.BlockInteraction.TRIGGER_BLOCK;
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
@@ -28,6 +29,7 @@ index 9cbd692680c66331ae8e1544ee8d2a7317262d01..63bdcd977f876c04374c6726f3abe940
 +        if (explosionInteraction == ExplosionInteraction.MOB) {
 +            switch (source ) {
 +                case WitherSkull ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case WitherBoss ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
 +                case Creeper ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_CREEPER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
 +                case LargeFireball ignored -> blockInteraction = this.getGameRules().getBoolean(GameRules.RULE_GHAST_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
 +                case null, default -> {}
