@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Thu, 20 Feb 2025 09:02:58 -0600
+Subject: [PATCH] Experimental noXPCooldown GameRule
+
+
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index 36f8013fa95bb42b4cda2a926be900acefc3f5da..f239bb7b8f0bdca03db3878b9cd0b02aa7fbf124 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -336,6 +336,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+      */
+     public static final GameRule<Boolean> SHULKER_BULLET_INTERACTIONS = new GameRule<>("shulkerBulletInteractions", Boolean.class);
+     // Cuneiform END
++    // Cuneiform START - noXPCooldown
++    /**
++     * Whether the collection of experience points should have a cooldown.
++     */
++    public static final GameRule<Boolean> NO_XP_COOLDOWN = new GameRule<>("noXPCooldown", Boolean.class);
++    // Cuneiform END
++
+     
+     // All GameRules instantiated above this for organizational purposes
+     private final String name;

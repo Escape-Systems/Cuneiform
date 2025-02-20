@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Thu, 20 Feb 2025 09:04:00 -0600
+Subject: [PATCH] Experimental noXPCooldown GameRule
+
+
+diff --git a/net/minecraft/world/entity/ExperienceOrb.java b/net/minecraft/world/entity/ExperienceOrb.java
+index a5fd13641d134eae9d8f1d998cfc456b8fccd140..c22755912dc4cba607197311d9ad2954ce5da507 100644
+--- a/net/minecraft/world/entity/ExperienceOrb.java
++++ b/net/minecraft/world/entity/ExperienceOrb.java
+@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.enchantment.EnchantedItemInUse;
+ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
++import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.entity.EntityTypeTest;
+ import net.minecraft.world.phys.AABB;
+@@ -322,7 +323,8 @@ public class ExperienceOrb extends Entity {
+     @Override
+     public void playerTouch(Player entity) {
+         if (entity instanceof ServerPlayer serverPlayer) {
+-            if (entity.takeXpDelay == 0 && new com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent(serverPlayer.getBukkitEntity(), (org.bukkit.entity.ExperienceOrb) this.getBukkitEntity()).callEvent()) { // Paper - PlayerPickupExperienceEvent
++//              |------------------------- Cuneiform - noXPCooldown --------------------------------|
++            if (serverPlayer.serverLevel().getGameRules().getBoolean(GameRules.RULE_NO_XP_COOLDOWN) || entity.takeXpDelay == 0 && new com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent(serverPlayer.getBukkitEntity(), (org.bukkit.entity.ExperienceOrb) this.getBukkitEntity()).callEvent()) { // Paper - PlayerPickupExperienceEvent
+                 entity.takeXpDelay = CraftEventFactory.callPlayerXpCooldownEvent(entity, 2, PlayerExpCooldownChangeEvent.ChangeReason.PICKUP_ORB).getNewCooldown(); // CraftBukkit - entityhuman.takeXpDelay = 2;
+                 entity.take(this, 1);
+                 int i = this.repairPlayerItems(serverPlayer, this.value);
+diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
+index 26ef373f5628e55c40392ad4402fa459b57fba08..d1bf85b951bb929e156129f3175a4d94b97cdd6b 100644
+--- a/net/minecraft/world/level/GameRules.java
++++ b/net/minecraft/world/level/GameRules.java
+@@ -19,6 +19,7 @@ import java.util.function.Function;
+ import java.util.function.Supplier;
+ import java.util.stream.Stream;
+ import javax.annotation.Nullable;
++import jdk.jfr.Experimental;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.commands.Commands;
+ import net.minecraft.nbt.CompoundTag;
+@@ -255,6 +256,13 @@ public class GameRules {
+     );
+     // Cuneiform END
+ 
++    // Cuneiform START - noXPCooldown
++    @Experimental
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_NO_XP_COOLDOWN = register(
++        "noXPCooldown", Category.PLAYER, GameRules.BooleanValue.create(false)
++    );
++    // Cuneiform END
++
+     private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
+     private final FeatureFlagSet enabledFeatures;
+     private final GameRules.Value<?>[] gameruleArray; // Paper - Perf: Use array for gamerule storage
