@@ -14,6 +14,7 @@ needs and wants.
   - `creeperGriefing` Disables mob-griefing specifically from creepers.
   - `endermanGriefing` Disables mob-griefing specifically from endermen.
 - Gamerule to revert to pre-1.21.4 Shulker bullet behavior `shulkerBulletInteractions`
+- Gamerule to disable XP pickup cooldown `noXPCooldown`
 - JSON Logging output for automated log ingestion
 
 <details>
