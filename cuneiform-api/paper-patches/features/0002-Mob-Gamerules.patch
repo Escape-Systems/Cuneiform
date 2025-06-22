@@ -1,25 +1,24 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Lexie Malina <alex@t-ch.net>
-Date: Tue, 14 Jan 2025 02:58:07 -0600
-Subject: [PATCH] Add advanced mobGriefing gamerules
+Date: Mon, 23 Jun 2025 14:25:59 -0500
+Subject: [PATCH] Mob Gamerules
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index f05bc95b9f61540b0126391439b0287c95041e85..e0e70c7ee7dd1a7dc9be431285f563047239651f 100644
+index 9826247f81a377f303f90f139b64e77c23b3f9ff..657a5c497c9fedcbfbc77bf6c0081c7b5fc33d5e 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -297,12 +297,39 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
-     public static final GameRule<Integer> SPAWN_CHUNK_RADIUS = new GameRule<>("spawnChunkRadius", Integer.class);
+@@ -311,11 +311,36 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+     public static final GameRule<Boolean> LOCATOR_BAR = new GameRule<>("locatorBar", Boolean.class);
  
  
-+
-     // Cuneiform START - No more natural bats.
+-    // Cuneiform START - No more natural bats.
++    // Cuneiform START - GameRules
      /**
       * Whether bats will naturally spawn.
       */
      public static final GameRule<Boolean> DO_BAT_SPAWN = new GameRule<>("doBatSpawn", Boolean.class);
-     // Cuneiform END
-+    // Cuneiform START - Advanced mobGriefing gamerules
++
 +    /**
 +     * Whether the wither will destroy blocks.
 +     */
@@ -44,7 +43,6 @@ index f05bc95b9f61540b0126391439b0287c95041e85..e0e70c7ee7dd1a7dc9be431285f56304
 +     * Whether mobs that use BreakDoorGoal will break doors.
 +     */
 +    public static final GameRule<Boolean> BREAK_DOORS = new GameRule<>("breakDoors", Boolean.class);
-+    // Cuneiform END
+     // Cuneiform END
  
      // All GameRules instantiated above this for organizational purposes
-     private final String name;
