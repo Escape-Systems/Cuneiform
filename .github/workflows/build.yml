@@ -37,6 +37,6 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: paperclip-bundle
-          path: cuneiform-server/build/libs/cuneiform-paperclip-**
+          path: cuneiform-server/build/libs/cuneiform-paperclip-*-*-SNAPSHOT-mojmap.jar
           if-no-files-found: error
 
