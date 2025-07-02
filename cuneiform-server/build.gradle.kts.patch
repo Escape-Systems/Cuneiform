@@ -1,6 +1,7 @@
 --- a/folia-server/build.gradle.kts
 +++ b/folia-server/build.gradle.kts
-@@ -1,9 +_,8 @@
+@@ -1,10 +_,9 @@
+ import io.papermc.fill.model.BuildChannel
  import io.papermc.paperweight.attribute.DevBundleOutput
 -import io.papermc.paperweight.util.*
 -import io.papermc.paperweight.util.data.FileEntry
@@ -13,17 +14,17 @@
  
  plugins {
      `java-library`
-@@ -24,7 +_,8 @@
+@@ -26,7 +_,8 @@
      minecraftVersion = providers.gradleProperty("mcVersion")
      gitFilePatches = false
- 
+     
 -    val fork = forks.register("folia") {
 +    val folia = forks.register("folia") {
 +        rootDirectory = upstreamsDirectory().map { it.dir("folia") }
          upstream.patchDir("paperServer") {
              upstreamPath = "paper-server"
              excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
-@@ -33,7 +_,28 @@
+@@ -35,7 +_,28 @@
          }
      }
  
@@ -51,9 +52,9 @@
 +
 +    activeFork = cuneiform
  
+ 
      spigot {
-         enabled = true
-@@ -68,6 +_,7 @@
+@@ -71,6 +_,7 @@
      @get:Inject
      abstract val archiveOperations: ArchiveOperations
  }
@@ -61,7 +62,7 @@
  val services = objects.newInstance<Services>()
  
  if (project.providers.gradleProperty("publishDevBundle").isPresent) {
-@@ -81,7 +_,10 @@
+@@ -84,7 +_,10 @@
      devBundleComponent.addVariantsFromConfiguration(devBundle.get()) {}
  
      val runtime = configurations.consumable("serverRuntimeClasspath") {
@@ -73,7 +74,7 @@
          attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
          extendsFrom(configurations.runtimeClasspath.get())
      }
-@@ -90,7 +_,10 @@
+@@ -93,7 +_,10 @@
      }
  
      val compile = configurations.consumable("serverCompileClasspath") {
@@ -85,7 +86,7 @@
          attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_API))
          extendsFrom(configurations.compileClasspath.get())
      }
-@@ -120,10 +_,13 @@
+@@ -123,10 +_,13 @@
      main {
          java { srcDir("../paper-server/src/main/java"); srcDir("../paper-server/src/generated/java") }
          resources { srcDir("../paper-server/src/main/resources") }
@@ -100,7 +101,7 @@
      }
  }
  val log4jPlugins = sourceSets.create("log4jPlugins") {
-@@ -140,6 +_,7 @@
+@@ -143,6 +_,7 @@
  
  // Configure mockito agent that is needed in newer java versions
  val mockitoAgent = configurations.register("mockitoAgent")
@@ -108,7 +109,7 @@
  abstract class MockitoAgentProvider : CommandLineArgumentProvider {
      @get:CompileClasspath
      abstract val fileCollection: ConfigurableFileCollection
-@@ -150,7 +_,7 @@
+@@ -153,7 +_,7 @@
  }
  
  dependencies {
@@ -117,7 +118,7 @@
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -173,6 +_,7 @@
+@@ -176,6 +_,7 @@
          isTransitive = false
      }
      implementation("io.netty:netty-codec-haproxy:4.1.118.Final") // Add support for proxy protocol
@@ -125,7 +126,7 @@
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.8")
      implementation("org.spongepowered:configurate-yaml:4.2.0-20250225.064233-199")
-@@ -196,7 +_,9 @@
+@@ -199,7 +_,9 @@
      testImplementation("org.junit.platform:junit-platform-suite-engine:1.12.2")
      testImplementation("org.hamcrest:hamcrest:2.2")
      testImplementation("org.mockito:mockito-core:5.14.1")
@@ -136,7 +137,7 @@
      testImplementation("org.ow2.asm:asm-tree:9.8")
      testImplementation("org.junit-pioneer:junit-pioneer:2.2.0") // CartesianTest
  
-@@ -226,14 +_,14 @@
+@@ -229,14 +_,14 @@
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -155,7 +156,7 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -292,7 +_,8 @@
+@@ -295,7 +_,8 @@
      jvmArgumentProviders.add(provider)
  }
  
