@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    id("io.papermc.paperweight.patcher") version "2.0.0-beta.17"
+    id("io.papermc.paperweight.patcher") version "2.0.0-beta.18"
 }
 
 paperweight {
@@ -78,11 +78,15 @@ subprojects {
 
     extensions.configure<PublishingExtension> {
         repositories {
-
+            mavenLocal()
             maven("https://mvn.littleoni.net/snapshots/") {
                 name = "littleOniSnapshots"
                 credentials(PasswordCredentials::class)
             }
+//            maven {
+//                name = "littleOniSnapshots"
+//                url = uri("s3://tech-6-maven-repository-snapshots.s3.us-west-002.backblazeb2.com/")
+//            }
         }
     }
 }

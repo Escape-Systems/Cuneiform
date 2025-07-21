@@ -126,18 +126,7 @@
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
      implementation("org.ow2.asm:asm-commons:9.8")
      implementation("org.spongepowered:configurate-yaml:4.2.0-20250225.064233-199")
-@@ -199,7 +_,9 @@
-     testImplementation("org.junit.platform:junit-platform-suite-engine:1.12.2")
-     testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.14.1")
--    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // Configure mockito agent that is needed in newer java versions
-+    mockitoAgent("org.mockito:mockito-core:5.14.1") {
-+        isTransitive = false
-+    } // Configure mockito agent that is needed in newer java versions
-     testImplementation("org.ow2.asm:asm-tree:9.8")
-     testImplementation("org.junit-pioneer:junit-pioneer:2.2.0") // CartesianTest
- 
-@@ -229,14 +_,14 @@
+@@ -225,14 +_,14 @@
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -149,20 +138,11 @@
 +            "Specification-Title" to "Cuneiform",
              "Specification-Version" to project.version,
 -            "Specification-Vendor" to "Paper Team",
-+            "Specification-Vendor" to "Escape Systems",
-             "Brand-Id" to "papermc:folia",
+-            "Brand-Id" to "papermc:folia",
 -            "Brand-Name" to "Folia",
++            "Specification-Vendor" to "Escape Systems",
++            "Brand-Id" to "esc:cuneiform",
 +            "Brand-Name" to "Cuneiform",
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -295,7 +_,8 @@
-     jvmArgumentProviders.add(provider)
- }
- 
--val generatedDir: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
-+val generatedDir: java.nio.file.Path =
-+    layout.projectDirectory.dir("src/generated/java").asFile.toPath()
- idea {
-     module {
-         generatedSourceDirs.add(generatedDir.toFile())

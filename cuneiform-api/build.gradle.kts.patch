@@ -54,14 +54,6 @@
  val mainCapability = "${project.group}:${project.name}:${project.version}"
  configurations {
      val outgoing = outgoingVariants.map { named(it) }
-@@ -174,6 +_,7 @@
-     @get:Inject
-     abstract val fileSystemOperations: FileSystemOperations
- }
-+
- val services = objects.newInstance<Services>()
- 
- tasks.withType<Javadoc> {
 @@ -201,12 +_,14 @@
      )
      options.tags("apiNote:a:API Note:")
