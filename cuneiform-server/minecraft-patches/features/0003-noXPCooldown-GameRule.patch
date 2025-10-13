@@ -5,7 +5,7 @@ Subject: [PATCH] noXPCooldown GameRule
 
 
 diff --git a/net/minecraft/world/entity/ExperienceOrb.java b/net/minecraft/world/entity/ExperienceOrb.java
-index f8d94181e97630d9d551553e3a504d7e3ae36f96..c621833d3f5a128e07f47a9df72ec95c80dfa291 100644
+index f8d94181e97630d9d551553e3a504d7e3ae36f96..e7f50279db650777cf397a082453ae249444b86b 100644
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
 @@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
@@ -16,17 +16,21 @@ index f8d94181e97630d9d551553e3a504d7e3ae36f96..c621833d3f5a128e07f47a9df72ec95c
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.entity.EntityTypeTest;
  import net.minecraft.world.level.storage.ValueInput;
-@@ -357,8 +358,9 @@ public class ExperienceOrb extends Entity {
+@@ -357,12 +358,12 @@ public class ExperienceOrb extends Entity {
      @Override
      public void playerTouch(Player entity) {
          if (entity instanceof ServerPlayer serverPlayer) {
 -            if (entity.takeXpDelay == 0 && new com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent(serverPlayer.getBukkitEntity(), (org.bukkit.entity.ExperienceOrb) this.getBukkitEntity()).callEvent()) { // Paper - PlayerPickupExperienceEvent
 +            if (serverPlayer.level().getGameRules().getBoolean(GameRules.RULE_NO_XP_COOLDOWN) || entity.takeXpDelay == 0 && new com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent(serverPlayer.getBukkitEntity(), (org.bukkit.entity.ExperienceOrb) this.getBukkitEntity()).callEvent()) { // Paper - PlayerPickupExperienceEvent // Cuneiform - NoXPCooldown GameRule
                  entity.takeXpDelay = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerXpCooldownEvent(entity, 2, org.bukkit.event.player.PlayerExpCooldownChangeEvent.ChangeReason.PICKUP_ORB).getNewCooldown(); // CraftBukkit - entity.takeXpDelay = 2;
-+
                  entity.take(this, 1);
                  int i = this.repairPlayerItems(serverPlayer, this.getValue());
                  if (i > 0) {
+-                    entity.giveExperiencePoints(org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerExpChangeEvent(entity, this, i).getAmount()); // CraftBukkit - i -> event.getAmount() // Paper - supply experience orb
++                    entity.giveExperiencePoints(org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerExpChangeEvent(entity, this).getAmount()); // CraftBukkit -> event.getAmount() // Paper - supply experience orb
+                 }
+ 
+                 this.count--;
 diff --git a/net/minecraft/world/level/GameRules.java b/net/minecraft/world/level/GameRules.java
 index f44497f04a06f9d80bd0101345f339b8d6a8b044..cab10a919e2faefc023fcdd9404b1d7fae00377b 100644
 --- a/net/minecraft/world/level/GameRules.java
