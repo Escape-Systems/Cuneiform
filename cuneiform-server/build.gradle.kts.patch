@@ -100,17 +100,17 @@
  dependencies {
 -    implementation(project(":folia-api"))
 +    implementation(project(":cuneiform-api"))
-     implementation("ca.spottedleaf:concurrentutil:0.0.7")
+     implementation("ca.spottedleaf:concurrentutil:0.0.8")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -173,6 +_,7 @@
-         isTransitive = false
+@@ -174,6 +_,7 @@
      }
-     implementation("io.netty:netty-codec-haproxy:4.1.118.Final") // Add support for proxy protocol
-+    implementation("org.apache.logging.log4j:log4j-layout-template-json:2.24.1") // Cuneiform - JSON Logging
+     implementation("io.netty:netty-codec-haproxy:4.2.7.Final") // Add support for proxy protocol
      implementation("org.apache.logging.log4j:log4j-iostreams:2.24.1")
++    implementation("org.apache.logging.log4j:log4j-layout-template-json:2.24.1") // Cuneiform - JSON Logging
      implementation("org.ow2.asm:asm-commons:9.8")
      implementation("org.spongepowered:configurate-yaml:4.2.0")
+ 
 @@ -214,7 +_,7 @@
      manifest {
          val git = Git(rootProject.layout.projectDirectory.path)

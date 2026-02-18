@@ -1,35 +1,11 @@
 --- a/folia-api/build.gradle.kts
 +++ b/folia-api/build.gradle.kts
-@@ -30,6 +_,7 @@
- 
- // Configure mockito agent that is needed in newer Java versions
- val mockitoAgent = configurations.register("mockitoAgent")
-+
- abstract class MockitoAgentProvider : CommandLineArgumentProvider {
-     @get:CompileClasspath
-     abstract val fileCollection: ConfigurableFileCollection
-@@ -86,11 +_,14 @@
-     testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.14.1")
-     testImplementation("org.ow2.asm:asm-tree:9.8")
--    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // configure mockito agent that is needed in newer java versions
-+    mockitoAgent("org.mockito:mockito-core:5.14.1") {
-+        isTransitive = false
-+    } // configure mockito agent that is needed in newer java versions
-     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
- }
- 
--val generatedDir: java.nio.file.Path = rootProject.layout.projectDirectory.dir("paper-api/src/generated/java").asFile.toPath()
-+val generatedDir: java.nio.file.Path =
-+    rootProject.layout.projectDirectory.dir("paper-api/src/generated/java").asFile.toPath()
- idea {
-     module {
-         generatedSourceDirs.add(generatedDir.toFile())
-@@ -101,22 +_,27 @@
+@@ -102,17 +_,22 @@
          java {
              srcDir(generatedDir)
              srcDir(file("../paper-api/src/main/java"))
 +            srcDir(file("../folia-api/src/main/java"))
++
          }
          resources {
              srcDir(file("../paper-api/src/main/resources"))
@@ -47,27 +23,3 @@
          }
      }
  }
- 
--val outgoingVariants = arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
-+val outgoingVariants =
-+    arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
- val mainCapability = "${project.group}:${project.name}:${project.version}"
- configurations {
-     val outgoing = outgoingVariants.map { named(it) }
-@@ -201,12 +_,14 @@
-     )
-     options.tags("apiNote:a:API Note:")
- 
--    inputs.files(apiAndDocs).ignoreEmptyDirectories().withPropertyName(apiAndDocs.name + "-configuration")
-+    inputs.files(apiAndDocs).ignoreEmptyDirectories()
-+        .withPropertyName(apiAndDocs.name + "-configuration")
-     val apiAndDocsElements = apiAndDocs.elements
-     doFirst {
-         options.addStringOption(
-             "sourcepath",
--            apiAndDocsElements.get().map { it.asFile }.joinToString(separator = File.pathSeparator, transform = File::getPath)
-+            apiAndDocsElements.get().map { it.asFile }
-+                .joinToString(separator = File.pathSeparator, transform = File::getPath)
-         )
-     }
- 

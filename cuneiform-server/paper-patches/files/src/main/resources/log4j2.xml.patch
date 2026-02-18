@@ -1,6 +1,6 @@
 --- a/src/main/resources/log4j2.xml
 +++ b/src/main/resources/log4j2.xml
-@@ -1,54 +_,50 @@
+@@ -1,46 +_,50 @@
  <?xml version="1.0" encoding="UTF-8"?>
  <Configuration status="WARN" shutdownHook="disable">
 -    <Appenders>
@@ -33,18 +33,10 @@
 -            <DefaultRolloverStrategy max="1000"/>
 -        </RollingRandomAccessFile>
 -        <Async name="Async">
--            <AppenderRef ref="rewrite"/>
--        </Async>
--        <Rewrite name="rewrite">
--            <StacktraceDeobfuscatingRewritePolicy />
--            <AppenderRef ref="rewrite2"/>
--        </Rewrite>
--        <Rewrite name="rewrite2">
--            <ExtraClassInfoRewritePolicy />
 -            <AppenderRef ref="File"/>
 -            <AppenderRef ref="TerminalConsole" level="info"/>
 -            <AppenderRef ref="ServerGuiConsole" level="info"/>
--        </Rewrite>
+-        </Async>
 -    </Appenders>
 -    <Loggers>
 -        <Root level="info">
