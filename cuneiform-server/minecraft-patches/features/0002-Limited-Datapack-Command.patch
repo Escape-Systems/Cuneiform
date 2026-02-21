@@ -1,30 +1,30 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Lexie Malina <alex@t-ch.net>
-Date: Mon, 23 Jun 2025 14:18:01 -0500
-Subject: [PATCH] Enable a limited Datapack Command
+Date: Wed, 18 Feb 2026 18:12:10 -0600
+Subject: [PATCH] Limited Datapack Command
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index ad19e9e599b26dfdb53929d9410860cb1b97698c..dd0887ffd9f5661b03c632c0d8e639a4f4c6c183 100644
+index c859197d643fd96ea2a5ef51837abc457e27f002..baecd9d3cdb83f6e4dd32d3ded6148d96c362fe3 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -189,7 +189,7 @@ public class Commands {
-         ClearInventoryCommands.register(this.dispatcher, context);
+@@ -201,7 +201,7 @@ public class Commands {
          //CloneCommands.register(this.dispatcher, context); // Folia - region threading - TODO
          DamageCommand.register(this.dispatcher, context);
--        //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
-+        DataPackCommand.register(this.dispatcher, context); // Folia - region threading // Cuneiform - Enable Datapack listing but no enable/disable
-         //DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
+         //DataCommands.register(this.dispatcher); // Folia - region threading - TODO
+-        //DataPackCommand.register(this.dispatcher, context); // Folia - region threading - TODO
++        DataPackCommand.register(this.dispatcher, context); // Folia - region threading - // Cuneiform Limited Datapack Commands
          //DebugCommand.register(this.dispatcher); // Folia - region threading - TODO
          DefaultGameModeCommands.register(this.dispatcher);
+         //DialogCommand.register(this.dispatcher, context); // Folia - region threading - TODO
 diff --git a/net/minecraft/server/commands/DataPackCommand.java b/net/minecraft/server/commands/DataPackCommand.java
-index 3eaa9c85d06f6ecc8ed639d8befa861439390eb7..fb77a97deadba1ed61190d06d4badb7bc1e55ce8 100644
+index 8c530eef0e416d8b96f190ada358d77d34dbc8ac..782430bdf562ce034fca2ca454deccc9fbef74b7 100644
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
-@@ -98,69 +98,71 @@ public class DataPackCommand {
+@@ -98,92 +98,96 @@ public class DataPackCommand {
          dispatcher.register(
              Commands.literal("datapack")
-                 .requires(Commands.hasPermission(2))
+                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 -                .then(
 -                    Commands.literal("enable")
 -                        .then(
@@ -88,7 +88,7 @@ index 3eaa9c85d06f6ecc8ed639d8befa861439390eb7..fb77a97deadba1ed61190d06d4badb7b
 -                                .executes(commandContext -> disablePack(commandContext.getSource(), getPack(commandContext, "name", false)))
 -                        )
 -                )
-+//                Cuneiform START - Enable Datapack listing but no enable/disable
++//                CUNEIFORM - START Limited Datapack Commands
 +//                .then(
 +//                    Commands.literal("enable")
 +//                        .then(
@@ -152,7 +152,49 @@ index 3eaa9c85d06f6ecc8ed639d8befa861439390eb7..fb77a97deadba1ed61190d06d4badb7b
 +//                                .executes(commandContext -> disablePack(commandContext.getSource(), getPack(commandContext, "name", false)))
 +//                        )
 +//                )
-+//                Cuneiform END
++//               CUNEIFORM - END
                  .then(
                      Commands.literal("list")
                          .executes(commandContext -> listPacks(commandContext.getSource()))
+                         .then(Commands.literal("available").executes(commandContext -> listAvailablePacks(commandContext.getSource())))
+                         .then(Commands.literal("enabled").executes(commandContext -> listEnabledPacks(commandContext.getSource())))
+                 )
+-                .then(
+-                    Commands.literal("create")
+-                        .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
+-                        .then(
+-                            Commands.argument("id", StringArgumentType.string())
+-                                .then(
+-                                    Commands.argument("description", ComponentArgument.textComponent(buildContext))
+-                                        .executes(
+-                                            commandContext -> createPack(
+-                                                commandContext.getSource(),
+-                                                StringArgumentType.getString(commandContext, "id"),
+-                                                ComponentArgument.getResolvedComponent(commandContext, "description")
+-                                            )
+-                                        )
+-                                )
+-                        )
+-                )
++//                CUNEIFORM - START Limited Datapack Commands
++//                .then(
++//                    Commands.literal("create")
++//                        .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
++//                        .then(
++//                            Commands.argument("id", StringArgumentType.string())
++//                                .then(
++//                                    Commands.argument("description", ComponentArgument.textComponent(buildContext))
++//                                        .executes(
++//                                            commandContext -> createPack(
++//                                                commandContext.getSource(),
++//                                                StringArgumentType.getString(commandContext, "id"),
++//                                                ComponentArgument.getResolvedComponent(commandContext, "description")
++//                                            )
++//                                        )
++//                                )
++//                        )
++//                )
++//               CUNEIFORM - END
+         );
+     }
+ 

@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Fri, 20 Feb 2026 21:05:18 -0600
+Subject: [PATCH] XP Delay Gamerule
+
+
+diff --git a/net/minecraft/world/entity/ExperienceOrb.java b/net/minecraft/world/entity/ExperienceOrb.java
+index f2ec0bd8cca3c08d558790537e17a8a2f95f1953..d5c13398fc5b778eaa35cebb9ae3c719b6afe53f 100644
+--- a/net/minecraft/world/entity/ExperienceOrb.java
++++ b/net/minecraft/world/entity/ExperienceOrb.java
+@@ -355,7 +355,8 @@ public class ExperienceOrb extends Entity {
+     public void playerTouch(Player entity) {
+         if (entity instanceof ServerPlayer serverPlayer) {
+             if (entity.takeXpDelay == 0 && new com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent(serverPlayer.getBukkitEntity(), (org.bukkit.entity.ExperienceOrb) this.getBukkitEntity()).callEvent()) { // Paper - PlayerPickupExperienceEvent
+-                entity.takeXpDelay = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerXpCooldownEvent(entity, 2, org.bukkit.event.player.PlayerExpCooldownChangeEvent.ChangeReason.PICKUP_ORB).getNewCooldown(); // CraftBukkit - entity.takeXpDelay = 2;
++                entity.takeXpDelay = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerXpCooldownEvent(entity, serverPlayer.level().getGameRules().get(
++                    net.minecraft.world.level.gamerules.GameRules.XP_COOLDOWN), org.bukkit.event.player.PlayerExpCooldownChangeEvent.ChangeReason.PICKUP_ORB).getNewCooldown(); // CraftBukkit - entity.takeXpDelay = 2; // CUNEIFORM - XP Delay gamerule.
+                 entity.take(this, 1);
+                 int i = this.repairPlayerItems(serverPlayer, this.getValue());
+                 if (i > 0) {
+diff --git a/net/minecraft/world/level/gamerules/GameRules.java b/net/minecraft/world/level/gamerules/GameRules.java
+index 7e1f760140c1dc182db16bfd88091425ee50673a..5085c8aa9d27702596abb6e05e8d632f678ecc87 100644
+--- a/net/minecraft/world/level/gamerules/GameRules.java
++++ b/net/minecraft/world/level/gamerules/GameRules.java
+@@ -105,6 +105,7 @@ public class GameRules {
+     public static final GameRule<Boolean> ZOMBIE_GRIEFING = registerCuneiformBoolean("zombie_griefing",  true);
+     public static final GameRule<Boolean> BAT_SPAWN = registerCuneiformBoolean("bat_spawn",  true);
+     // CUNEIFORM End
++    public static final GameRule<Integer> XP_COOLDOWN = registerCuneiformInteger("xp_cooldown", 2, 0, Integer.MAX_VALUE);  // CUNEIFORM Start - XP Cooldown
+ 
+     public final GameRuleMap rules;
+ 

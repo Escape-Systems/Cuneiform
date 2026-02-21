@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Fri, 20 Feb 2026 20:55:24 -0600
+Subject: [PATCH] Mob gamerules
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index 3471200d54b938ef82f142efc2fcb096d72ec7b4..c6302f51734d11579f2c5122389924aaff041f43 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -2091,6 +2091,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             case TRIGGER -> Explosion.BlockInteraction.TRIGGER_BLOCK;
+             case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
+         };
++
++        // Cuneiform START - Explosion mobGriefing.
++        if (explosionInteraction == ExplosionInteraction.MOB) {
++            switch (source ) {
++                case net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull ignored -> blockInteraction = this.getGameRules().get(GameRules.WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case net.minecraft.world.entity.boss.wither.WitherBoss ignored -> blockInteraction = this.getGameRules().get(GameRules.WITHER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case net.minecraft.world.entity.monster.Creeper ignored -> blockInteraction = this.getGameRules().get(GameRules.CREEPER_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball ignored -> blockInteraction = this.getGameRules().get(GameRules.GHAST_GRIEFING) ? blockInteraction : Explosion.BlockInteraction.KEEP;
++                case null, default -> {}
++            }
++        }
++        // Cuneiform END - Explosion mobGriefing.
++
+         Vec3 vec3 = new Vec3(x, y, z);
+         ServerExplosion serverExplosion = new ServerExplosion(this, source, damageSource, damageCalculator, vec3, radius, fire, blockInteraction);
+         if (configurator != null) configurator.accept(serverExplosion);// Paper - Allow explosions to damage source
+diff --git a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
+index 272335ec91615e2619ce95f47dbf228d180239c3..7824e67f78ba9919152c35757d2122fe1c67c9e5 100644
+--- a/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
++++ b/net/minecraft/world/entity/ai/goal/BreakDoorGoal.java
+@@ -32,6 +32,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
+     public boolean canUse() {
+         return super.canUse()
+             && getServerLevel(this.mob).getGameRules().get(GameRules.MOB_GRIEFING)
++            && getServerLevel(this.mob).getGameRules().get(GameRules.ZOMBIE_GRIEFING)
+             && this.isValidDifficulty(this.mob.level().getDifficulty())
+             && !this.isOpen();
+     }
+diff --git a/net/minecraft/world/entity/ambient/Bat.java b/net/minecraft/world/entity/ambient/Bat.java
+index ca68d356e892e0ac8a651ced92aab7dbfd4699b4..0bbb631c096bfe067512f128e77fb8465d44b1bc 100644
+--- a/net/minecraft/world/entity/ambient/Bat.java
++++ b/net/minecraft/world/entity/ambient/Bat.java
+@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.block.LevelEvent;
+ import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.level.gamerules.GameRules;
+ import net.minecraft.world.level.levelgen.Heightmap;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
+@@ -226,6 +227,7 @@ public class Bat extends AmbientCreature {
+         EntityType<Bat> entityType, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource randomSource
+     ) {
+         return pos.getY() < level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY()
++            && level.getMinecraftWorld().getGameRules().get(GameRules.BAT_SPAWN)
+             && !randomSource.nextBoolean()
+             && level.getMaxLocalRawBrightness(pos) <= randomSource.nextInt(4)
+             && level.getBlockState(pos.below()).is(BlockTags.BATS_SPAWNABLE_ON)
+diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
+index 6516cccada06a9a7d3d743929712970fe0a2b8c8..46198ae9c836af676cb730b93eb648a24551de7b 100644
+--- a/net/minecraft/world/entity/monster/EnderMan.java
++++ b/net/minecraft/world/entity/monster/EnderMan.java
+@@ -627,6 +627,7 @@ public class EnderMan extends Monster implements NeutralMob {
+         public boolean canUse() {
+             return this.enderman.getCarriedBlock() == null
+                 && getServerLevel(this.enderman).getGameRules().get(GameRules.MOB_GRIEFING)
++                && getServerLevel(this.enderman).getGameRules().get(GameRules.ENDERMAN_GRIEFING) // Cuneiform - Mob Gamerules
+                 && this.enderman.getRandom().nextInt(reducedTickDelay(20)) == 0;
+         }
+ 
+diff --git a/net/minecraft/world/level/gamerules/GameRules.java b/net/minecraft/world/level/gamerules/GameRules.java
+index 3bce739bcb7298483e0adef411f2eae9c197f761..7e1f760140c1dc182db16bfd88091425ee50673a 100644
+--- a/net/minecraft/world/level/gamerules/GameRules.java
++++ b/net/minecraft/world/level/gamerules/GameRules.java
+@@ -96,7 +96,15 @@ public class GameRules {
+     public static final GameRule<Boolean> TNT_EXPLOSION_DROP_DECAY = registerBoolean("tnt_explosion_drop_decay", GameRuleCategory.DROPS, false);
+     public static final GameRule<Boolean> UNIVERSAL_ANGER = registerBoolean("universal_anger", GameRuleCategory.MOBS, false);
+     public static final GameRule<Boolean> WATER_SOURCE_CONVERSION = registerBoolean("water_source_conversion", GameRuleCategory.UPDATES, true);
+-    public static final GameRule<Boolean> CUNEIFORM_TEST_BOOL = registerCuneiformBoolean("test_bool", true);
++
++    // CUNEIFORM Start - Mob Gamerules
++    public static final GameRule<Boolean> WITHER_GRIEFING = registerCuneiformBoolean("wither_griefing",  true);
++    public static final GameRule<Boolean> CREEPER_GRIEFING = registerCuneiformBoolean("creeper_griefing",  true);
++    public static final GameRule<Boolean> GHAST_GRIEFING = registerCuneiformBoolean("ghast_griefing",  true);
++    public static final GameRule<Boolean> ENDERMAN_GRIEFING = registerCuneiformBoolean("enderman_griefing",  true);
++    public static final GameRule<Boolean> ZOMBIE_GRIEFING = registerCuneiformBoolean("zombie_griefing",  true);
++    public static final GameRule<Boolean> BAT_SPAWN = registerCuneiformBoolean("bat_spawn",  true);
++    // CUNEIFORM End
+ 
+     public final GameRuleMap rules;
+ 

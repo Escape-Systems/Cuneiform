@@ -1,0 +1,206 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Wed, 18 Feb 2026 15:52:26 -0600
+Subject: [PATCH] This is Cuneiform not folia
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
+index 08745a35b1ce8cc56d970472088de3cd17b9e43a..aced3527c0fb4580141ac1a19efca2f0fc7bcef4 100644
+--- a/src/main/java/com/destroystokyo/paper/Metrics.java
++++ b/src/main/java/com/destroystokyo/paper/Metrics.java
+@@ -593,7 +593,7 @@ public class Metrics {
+             boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
+             // Only start Metrics, if it's enabled in the config
+             if (config.getBoolean("enabled", true)) {
+-                Metrics metrics = new Metrics("Folia", serverUUID, logFailedRequests, Bukkit.getLogger()); // Folia - we have our own bstats page
++                Metrics metrics = new Metrics("Cuneiform", serverUUID, logFailedRequests, Bukkit.getLogger()); // Folia - we have our own bstats page // CUNEIFORM - we don't have our own bstats page
+ 
+                 metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
+                     String minecraftVersion = Bukkit.getVersion();
+@@ -607,7 +607,7 @@ public class Metrics {
+                 final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
+                 if (implVersion != null) {
+                     final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
+-                    paperVersion = "git-Folia-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Folia - we have our own bstats page
++                    paperVersion = "git-Cuneiform-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Folia - we have our own bstats page // CUNEIFORM - we don't have our own bstats page
+                 } else {
+                     paperVersion = "unknown";
+                 }
+diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+index 4d2936f6818c38e2844cba78ffad339e93ff29ab..70d9a2a33bb8fb2a603427111012744104226c54 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+@@ -40,8 +40,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+     private static final ComponentLogger COMPONENT_LOGGER = ComponentLogger.logger(LogManager.getRootLogger().getName());
+     private static final int DISTANCE_ERROR = -1;
+     private static final int DISTANCE_UNKNOWN = -2;
+-    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/folia"; // Folia
+-    private static final String REPOSITORY = "PaperMC/Folia"; // Folia
++    private static final String DOWNLOAD_PAGE = "https://github.com/Escape-Systems/Cuneiform"; // Folia // Cuneiform
++    private static final String REPOSITORY = "Escape-Systems/Cuneiform"; // Folia // Cuneiform
+     private static final ServerBuildInfo BUILD_INFO = ServerBuildInfo.buildInfo();
+     private static final String USER_AGENT = BUILD_INFO.brandName() + "/" + BUILD_INFO.asString(VERSION_SIMPLE) + " (https://papermc.io)";
+     private static final Gson GSON = new Gson();
+@@ -137,84 +137,89 @@ public class PaperVersionFetcher implements VersionFetcher {
+ 
+     private static Optional<MinecraftVersionFetcher> fetchMinecraftVersionList() {
+         final String currentVersion = PaperVersionFetcher.BUILD_INFO.minecraftVersionId();
++//        CUNEIFORM - Start We're not paper, shouldn't use their api.
++//        try {
++//            final URL versionsUrl = URI.create("https://fill.papermc.io/v3/projects/folia").toURL(); // Folia
++//            final HttpURLConnection connection = (HttpURLConnection) versionsUrl.openConnection();
++//            connection.setConnectTimeout(5000);
++//            connection.setReadTimeout(5000);
++//            connection.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
++//            connection.setRequestProperty("Accept", "application/json");
+ 
+-        try {
+-            final URL versionsUrl = URI.create("https://fill.papermc.io/v3/projects/folia").toURL(); // Folia
+-            final HttpURLConnection connection = (HttpURLConnection) versionsUrl.openConnection();
+-            connection.setConnectTimeout(5000);
+-            connection.setReadTimeout(5000);
+-            connection.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
+-            connection.setRequestProperty("Accept", "application/json");
+-
+-            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+-                final JsonObject json = GSON.fromJson(reader, JsonObject.class);
+-                final JsonObject versions = json.getAsJsonObject("versions");
+-                final List<String> versionList = versions.keySet().stream()
+-                    .map(versions::getAsJsonArray)
+-                    .flatMap(array -> StreamSupport.stream(array.spliterator(), false))
+-                    .map(JsonElement::getAsString)
+-                    .toList();
+-
+-                for (final String latestVersion : versionList) {
+-                    if (latestVersion.equals(currentVersion)) {
+-                        return Optional.empty();
+-                    }
+-
+-                    try {
+-                        final URL buildsUrl = URI.create("https://fill.papermc.io/v3/projects/folia/versions/" + latestVersion + "/builds/latest").toURL(); // Folia
+-                        final HttpURLConnection connection2 = (HttpURLConnection) buildsUrl.openConnection();
+-                        connection2.setConnectTimeout(5000);
+-                        connection2.setReadTimeout(5000);
+-                        connection2.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
+-                        connection2.setRequestProperty("Accept", "application/json");
+-
+-                        try (final BufferedReader buildReader = new BufferedReader(new InputStreamReader(connection2.getInputStream(), StandardCharsets.UTF_8))) {
+-                            final JsonObject buildJson = GSON.fromJson(buildReader, JsonObject.class);
+-                            if ("STABLE".equals(buildJson.get("channel").getAsString())) {
+-                                final int currentIndex = versionList.indexOf(currentVersion);
+-                                final int latestIndex = versionList.indexOf(latestVersion);
+-                                final int distance = currentIndex - latestIndex;
+-                                return Optional.of(new MinecraftVersionFetcher(latestVersion, distance));
+-                            }
+-                        } catch (final JsonSyntaxException ex) {
+-                            LOGGER.error("Error parsing json from Paper's downloads API", ex);
+-                        }
+-                    } catch (final IOException e) {
+-                        LOGGER.error("Error while parsing latest build", e);
+-                    }
+-                }
+-            } catch (final JsonSyntaxException ex) {
+-                LOGGER.error("Error parsing json from Paper's downloads API", ex);
+-            }
+-        } catch (final IOException e) {
+-            LOGGER.error("Error while parsing version list", e);
+-        }
++//            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
++//                final JsonObject json = GSON.fromJson(reader, JsonObject.class);
++//                final JsonObject versions = json.getAsJsonObject("versions");
++//                final List<String> versionList = versions.keySet().stream()
++//                    .map(versions::getAsJsonArray)
++//                    .flatMap(array -> StreamSupport.stream(array.spliterator(), false))
++//                    .map(JsonElement::getAsString)
++//                    .toList();
++//
++//                for (final String latestVersion : versionList) {
++//                    if (latestVersion.equals(currentVersion)) {
++//                        return Optional.empty();
++//                    }
++//
++//                    try {
++//                        final URL buildsUrl = URI.create("https://fill.papermc.io/v3/projects/folia/versions/" + latestVersion + "/builds/latest").toURL(); // Folia
++//                        final HttpURLConnection connection2 = (HttpURLConnection) buildsUrl.openConnection();
++//                        connection2.setConnectTimeout(5000);
++//                        connection2.setReadTimeout(5000);
++//                        connection2.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
++//                        connection2.setRequestProperty("Accept", "application/json");
++//
++//                        try (final BufferedReader buildReader = new BufferedReader(new InputStreamReader(connection2.getInputStream(), StandardCharsets.UTF_8))) {
++//                            final JsonObject buildJson = GSON.fromJson(buildReader, JsonObject.class);
++//                            if ("STABLE".equals(buildJson.get("channel").getAsString())) {
++//                                final int currentIndex = versionList.indexOf(currentVersion);
++//                                final int latestIndex = versionList.indexOf(latestVersion);
++//                                final int distance = currentIndex - latestIndex;
++//                                return Optional.of(new MinecraftVersionFetcher(latestVersion, distance));
++//                            }
++//                        } catch (final JsonSyntaxException ex) {
++//                            LOGGER.error("Error parsing json from Paper's downloads API", ex);
++//                        }
++//                    } catch (final IOException e) {
++//                        LOGGER.error("Error while parsing latest build", e);
++//                    }
++//                }
++//            } catch (final JsonSyntaxException ex) {
++//                LOGGER.error("Error parsing json from Paper's downloads API", ex);
++//            }
++//        } catch (final IOException e) {
++//            LOGGER.error("Error while parsing version list", e);
++//        }
++//        CUNEIFORM - END
+         return Optional.empty();
+     }
+ 
+     private static int fetchDistanceFromSiteApi(final int jenkinsBuild) {
+-        try {
+-            final URL buildsUrl = URI.create("https://fill.papermc.io/v3/projects/folia/versions/" + PaperVersionFetcher.BUILD_INFO.minecraftVersionId() + "/builds").toURL(); // Folia
+-            final HttpURLConnection connection = (HttpURLConnection) buildsUrl.openConnection();
+-            connection.setConnectTimeout(5000);
+-            connection.setReadTimeout(5000);
+-            connection.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
+-            connection.setRequestProperty("Accept", "application/json");
+-            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+-                final JsonArray builds = GSON.fromJson(reader, JsonArray.class);
+-                final int latest = StreamSupport.stream(builds.spliterator(), false)
+-                    .mapToInt(build -> build.getAsJsonObject().get("id").getAsInt())
+-                    .max()
+-                    .orElseThrow();
+-                return Math.max(latest - jenkinsBuild, 0);
+-            } catch (final JsonSyntaxException ex) {
+-                LOGGER.error("Error parsing json from Paper's downloads API", ex);
+-                return DISTANCE_ERROR;
+-            }
+-        } catch (final IOException e) {
+-            LOGGER.error("Error while parsing version", e);
+-            return DISTANCE_ERROR;
+-        }
++//        CUNEIFORM - Start We're not paper, shouldn't use their api.
++
++//        try {
++//            final URL buildsUrl = URI.create("https://fill.papermc.io/v3/projects/folia/versions/" + PaperVersionFetcher.BUILD_INFO.minecraftVersionId() + "/builds").toURL(); // Folia
++//            final HttpURLConnection connection = (HttpURLConnection) buildsUrl.openConnection();
++//            connection.setConnectTimeout(5000);
++//            connection.setReadTimeout(5000);
++//            connection.setRequestProperty("User-Agent", PaperVersionFetcher.USER_AGENT);
++//            connection.setRequestProperty("Accept", "application/json");
++//            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
++//                final JsonArray builds = GSON.fromJson(reader, JsonArray.class);
++//                final int latest = StreamSupport.stream(builds.spliterator(), false)
++//                    .mapToInt(build -> build.getAsJsonObject().get("id").getAsInt())
++//                    .max()
++//                    .orElseThrow();
++//                return Math.max(latest - jenkinsBuild, 0);
++//            } catch (final JsonSyntaxException ex) {
++//                LOGGER.error("Error parsing json from Paper's downloads API", ex);
++//                return DISTANCE_ERROR;
++//            }
++//        } catch (final IOException e) {
++//            LOGGER.error("Error while parsing version", e);
++//            return DISTANCE_ERROR;
++//        }
++//        CUNEIFORM - END
++        return DISTANCE_ERROR;
+     }
+ 
+     // Contributed by Techcable <Techcable@outlook.com> in GH-65

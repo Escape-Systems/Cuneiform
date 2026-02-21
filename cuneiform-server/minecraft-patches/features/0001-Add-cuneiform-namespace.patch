@@ -1,0 +1,107 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Wed, 18 Feb 2026 16:52:32 -0600
+Subject: [PATCH] Add cuneiform namespace
+
+
+diff --git a/net/minecraft/world/level/gamerules/GameRuleCategory.java b/net/minecraft/world/level/gamerules/GameRuleCategory.java
+index a0b70cd26e64a0276421956237b7b250bd02052e..9668aede783d7ff16446e3649ee45a423cad095e 100644
+--- a/net/minecraft/world/level/gamerules/GameRuleCategory.java
++++ b/net/minecraft/world/level/gamerules/GameRuleCategory.java
+@@ -16,6 +16,7 @@ public record GameRuleCategory(Identifier id) {
+     public static final GameRuleCategory UPDATES = register("updates");
+     public static final GameRuleCategory CHAT = register("chat");
+     public static final GameRuleCategory MISC = register("misc");
++    public static final GameRuleCategory CUNEIFORM = register(Identifier.fromNamespaceAndPath("cuneiform", "cuneiform"));
+ 
+     public Identifier getDescriptionId() {
+         return this.id;
+diff --git a/net/minecraft/world/level/gamerules/GameRules.java b/net/minecraft/world/level/gamerules/GameRules.java
+index e71a9ffdb6c081baa79113f34b179671c179152d..3bce739bcb7298483e0adef411f2eae9c197f761 100644
+--- a/net/minecraft/world/level/gamerules/GameRules.java
++++ b/net/minecraft/world/level/gamerules/GameRules.java
+@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
+ import com.mojang.brigadier.arguments.BoolArgumentType;
+ import com.mojang.brigadier.arguments.IntegerArgumentType;
+ import com.mojang.serialization.Codec;
++import io.papermc.paper.configuration.type.fallback.FallbackValue.Int;
+ import java.util.Objects;
+ import java.util.function.ToIntFunction;
+ import java.util.stream.Stream;
+@@ -11,6 +12,7 @@ import net.minecraft.SharedConstants;
+ import net.minecraft.core.Holder;
+ import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.world.flag.FeatureFlagSet;
+ import net.minecraft.world.flag.FeatureFlags;
+@@ -94,6 +96,8 @@ public class GameRules {
+     public static final GameRule<Boolean> TNT_EXPLOSION_DROP_DECAY = registerBoolean("tnt_explosion_drop_decay", GameRuleCategory.DROPS, false);
+     public static final GameRule<Boolean> UNIVERSAL_ANGER = registerBoolean("universal_anger", GameRuleCategory.MOBS, false);
+     public static final GameRule<Boolean> WATER_SOURCE_CONVERSION = registerBoolean("water_source_conversion", GameRuleCategory.UPDATES, true);
++    public static final GameRule<Boolean> CUNEIFORM_TEST_BOOL = registerCuneiformBoolean("test_bool", true);
++
+     public final GameRuleMap rules;
+ 
+     public static Codec<GameRules> codec(FeatureFlagSet enabledFeatures) {
+@@ -165,8 +169,12 @@ public class GameRules {
+     }
+ 
+     private static GameRule<Boolean> registerBoolean(String name, GameRuleCategory category, boolean defaultValue) {
++        return registerBoolean(Identifier.withDefaultNamespace(name), category, defaultValue);
++    }
++
++    private static GameRule<Boolean> registerBoolean(Identifier id, GameRuleCategory category, boolean defaultValue) {
+         return register(
+-            name,
++            id,
+             category,
+             GameRuleType.BOOL,
+             BoolArgumentType.bool(),
+@@ -174,10 +182,18 @@ public class GameRules {
+             defaultValue,
+             FeatureFlagSet.of(),
+             GameRuleTypeVisitor::visitBoolean,
+-            _boolean -> _boolean ? 1 : 0
++            (Boolean _boolean) -> _boolean ? 1 : 0
+         );
+     }
+ 
++    public static GameRule<Boolean> registerCuneiformBoolean(String name, boolean defaultValue) {
++        return registerBoolean(Identifier.fromNamespaceAndPath("cuneiform", name), GameRuleCategory.CUNEIFORM, defaultValue);
++    }
++
++    public static GameRule<Integer> registerCuneiformInteger(String name, int defaultValue, int min, int max) {
++        return register(Identifier.fromNamespaceAndPath("cuneiform", name), GameRuleCategory.CUNEIFORM, GameRuleType.INT, IntegerArgumentType.integer(min, max), Codec.intRange(min, max), defaultValue, FeatureFlagSet.of(), GameRuleTypeVisitor::visitInteger, integer -> integer);
++    }
++
+     private static GameRule<Integer> registerInteger(String name, GameRuleCategory category, int defaultValue, int min) {
+         return registerInteger(name, category, defaultValue, min, Integer.MAX_VALUE, FeatureFlagSet.of());
+     }
+@@ -212,10 +228,24 @@ public class GameRules {
+         FeatureFlagSet requiredFeatures,
+         GameRules.VisitorCaller<T> visitorCaller,
+         ToIntFunction<T> commandResultFunction
++    ) {
++        return register(Identifier.withDefaultNamespace(name), category, type, argument, valueCodec, defaultValue, requiredFeatures, visitorCaller, commandResultFunction);
++    }
++
++    private static <T> GameRule<T> register(
++        Identifier id,
++        GameRuleCategory category,
++        GameRuleType type,
++        ArgumentType<T> argument,
++        Codec<T> valueCodec,
++        T defaultValue,
++        FeatureFlagSet requiredFeatures,
++        GameRules.VisitorCaller<T> visitorCaller,
++        ToIntFunction<T> commandResultFunction
+     ) {
+         return Registry.register(
+             BuiltInRegistries.GAME_RULE,
+-            name,
++            id,
+             new GameRule<>(category, type, argument, visitorCaller, valueCodec, commandResultFunction, defaultValue, requiredFeatures)
+         );
+     }
