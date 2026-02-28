@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Fri, 27 Feb 2026 22:21:38 -0600
+Subject: [PATCH] XP Cooldown gamerule
+
+
+diff --git a/src/main/java/org/bukkit/GameRules.java b/src/main/java/org/bukkit/GameRules.java
+index 5ad7cfa4bbe174323d095efd724128c8e9357148..75f7473334a8621c55534910c588b0e9e2125796 100644
+--- a/src/main/java/org/bukkit/GameRules.java
++++ b/src/main/java/org/bukkit/GameRules.java
+@@ -145,6 +145,7 @@ public final class GameRules {
+     public static final GameRule<Boolean> ZOMBIE_GRIEFING = getCuniformRule("zombie_griefing");
+     public static final GameRule<Boolean> BAT_SPAWN = getCuniformRule("bat_spawn");
+ 
++    public static final GameRule<Integer> XP_COOLDOWN = getCuniformRule("xp_cooldown");
+ 
+     private static <T> GameRule<T> getCuniformRule(@KeyPattern.Value String key) {
+         return (GameRule<T>) Registry.GAME_RULE.getOrThrow(NamespacedKey.cuneiform(key));

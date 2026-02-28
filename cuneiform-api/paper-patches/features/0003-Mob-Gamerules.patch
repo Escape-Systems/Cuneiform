@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Fri, 27 Feb 2026 22:20:32 -0600
+Subject: [PATCH] Mob Gamerules
+
+
+diff --git a/src/main/java/org/bukkit/GameRules.java b/src/main/java/org/bukkit/GameRules.java
+index a58b688024427dfed9d51dd25368e35df500d909..5ad7cfa4bbe174323d095efd724128c8e9357148 100644
+--- a/src/main/java/org/bukkit/GameRules.java
++++ b/src/main/java/org/bukkit/GameRules.java
+@@ -137,6 +137,15 @@ public final class GameRules {
+     }
+ 
+     // Cuneiform Start - Cuneiform Gamerules
++
++    public static final GameRule<Boolean> WITHER_GRIEFING = getCuniformRule("wither_griefing");
++    public static final GameRule<Boolean> CREEPER_GRIEFING = getCuniformRule("creeper_griefing");
++    public static final GameRule<Boolean> GHAST_GRIEFING = getCuniformRule("ghast_griefing");
++    public static final GameRule<Boolean> ENDERMAN_GRIEFING = getCuniformRule("enderman_griefing");
++    public static final GameRule<Boolean> ZOMBIE_GRIEFING = getCuniformRule("zombie_griefing");
++    public static final GameRule<Boolean> BAT_SPAWN = getCuniformRule("bat_spawn");
++
++
+     private static <T> GameRule<T> getCuniformRule(@KeyPattern.Value String key) {
+         return (GameRule<T>) Registry.GAME_RULE.getOrThrow(NamespacedKey.cuneiform(key));
+     }

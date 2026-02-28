@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Fri, 27 Feb 2026 21:36:45 -0600
+Subject: [PATCH] Add Cuneiform gamerules
+
+
+diff --git a/src/main/java/org/bukkit/GameRules.java b/src/main/java/org/bukkit/GameRules.java
+index c1ad190d537b6b7086ac78c6f5cdecc0accd30dc..a58b688024427dfed9d51dd25368e35df500d909 100644
+--- a/src/main/java/org/bukkit/GameRules.java
++++ b/src/main/java/org/bukkit/GameRules.java
+@@ -136,6 +136,12 @@ public final class GameRules {
+         return (GameRule<T>) Registry.GAME_RULE.getOrThrow(NamespacedKey.minecraft(key));
+     }
+ 
++    // Cuneiform Start - Cuneiform Gamerules
++    private static <T> GameRule<T> getCuniformRule(@KeyPattern.Value String key) {
++        return (GameRule<T>) Registry.GAME_RULE.getOrThrow(NamespacedKey.cuneiform(key));
++    }
++    // Cuneiform End
++
+     private GameRules() {
+     }
+ }
+diff --git a/src/main/java/org/bukkit/NamespacedKey.java b/src/main/java/org/bukkit/NamespacedKey.java
+index 57d95e22db8c6b925fc96cf1a45a5a04366bb517..3798abdb39ef35254fe23a8250d35be8e8aaf791 100644
+--- a/src/main/java/org/bukkit/NamespacedKey.java
++++ b/src/main/java/org/bukkit/NamespacedKey.java
+@@ -35,6 +35,11 @@ public final class NamespacedKey implements Key, com.destroystokyo.paper.Namespa
+      */
+     public static final String BUKKIT = "bukkit";
+ 
++    /**
++     * Cuneiform namespace.
++     */
++    public static final String CUNEIFORM = "cuneiform";
++
+     private final String namespace;
+     private final String key;
+ 
+@@ -150,6 +155,19 @@ public final class NamespacedKey implements Key, com.destroystokyo.paper.Namespa
+         return new NamespacedKey(MINECRAFT, key);
+     }
+ 
++    // Cuneiform Start - Cuneiform Namespace
++    /**
++     * Get a key in the Cuneiform namespace.
++     *
++     * @param key the key to use
++     * @return new key in the Cuneiform namespace
++     */
++    @NotNull
++    public static NamespacedKey cuneiform(@NotNull String key) {
++        return new NamespacedKey(CUNEIFORM, key);
++    }
++    // Cuneiform End
++
+     /**
+      * Get a NamespacedKey from the supplied string with a default namespace if
+      * a namespace is not defined. This is a utility method meant to fetch a
