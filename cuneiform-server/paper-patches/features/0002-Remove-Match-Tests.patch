@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lexie Malina <alex@t-ch.net>
+Date: Sat, 28 Feb 2026 11:03:04 -0600
+Subject: [PATCH] Remove Match Tests
+
+
+diff --git a/src/test/java/org/bukkit/registry/PerRegistryTest.java b/src/test/java/org/bukkit/registry/PerRegistryTest.java
+index 1a743ea97267b56faf352c5585f435379979d4ab..42a3dde161d4eafb60cdf20c4e43038f6e3c9f1c 100644
+--- a/src/test/java/org/bukkit/registry/PerRegistryTest.java
++++ b/src/test/java/org/bukkit/registry/PerRegistryTest.java
+@@ -55,26 +55,28 @@ public class PerRegistryTest {
+             assertSame(element, registry.get(key)); // Paper - improve Registry
+         });
+     }
++// Cuneiform Start - Match is deprecated, lets just not test it.
++//    @ParameterizedTest
++//    @MethodSource("data")
++//    public <T extends Keyed> void testMatch(Registry<T> registry) { // Paper - improve Registry
++//        registry.forEach(element -> {
++//            NamespacedKey key = registry.getKey(element); // Paper - improve Registry
++//            assertNotNull(key); // Paper - improve Registry
++//
++//            this.assertSameMatchWithKeyMessage(registry, element, key.toString()); // namespace:key
++//            this.assertSameMatchWithKeyMessage(registry, element, key.getKey()); // key
++//            this.assertSameMatchWithKeyMessage(registry, element, key.toString().replace('_', ' ')); // namespace:key with space
++//            this.assertSameMatchWithKeyMessage(registry, element, key.getKey().replace('_', ' ')); // key with space
++//            this.assertSameMatchWithKeyMessage(registry, element, this.randomizeCase(key.toString())); // nAmeSPaCe:kEY
++//            this.assertSameMatchWithKeyMessage(registry, element, this.randomizeCase(key.getKey())); // kEy
++//        });
++//    }
++//
++//    private <T extends Keyed> void assertSameMatchWithKeyMessage(Registry<T> registry, T element, String key) { // Paper - improve Registry
++//        assertSame(element, registry.match(key), key);
++//    }
++// Cuneiform End - Match is deprecated, lets just not test it.
+ 
+-    @ParameterizedTest
+-    @MethodSource("data")
+-    public <T extends Keyed> void testMatch(Registry<T> registry) { // Paper - improve Registry
+-        registry.forEach(element -> {
+-            NamespacedKey key = registry.getKey(element); // Paper - improve Registry
+-            assertNotNull(key); // Paper - improve Registry
+-
+-            this.assertSameMatchWithKeyMessage(registry, element, key.toString()); // namespace:key
+-            this.assertSameMatchWithKeyMessage(registry, element, key.getKey()); // key
+-            this.assertSameMatchWithKeyMessage(registry, element, key.toString().replace('_', ' ')); // namespace:key with space
+-            this.assertSameMatchWithKeyMessage(registry, element, key.getKey().replace('_', ' ')); // key with space
+-            this.assertSameMatchWithKeyMessage(registry, element, this.randomizeCase(key.toString())); // nAmeSPaCe:kEY
+-            this.assertSameMatchWithKeyMessage(registry, element, this.randomizeCase(key.getKey())); // kEy
+-        });
+-    }
+-
+-    private <T extends Keyed> void assertSameMatchWithKeyMessage(Registry<T> registry, T element, String key) { // Paper - improve Registry
+-        assertSame(element, registry.match(key), key);
+-    }
+ 
+     private String randomizeCase(String input) {
+         int size = input.length();
